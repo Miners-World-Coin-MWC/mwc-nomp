@@ -1,7 +1,7 @@
-# BitZeny - Node Open Mining Portal
-[![gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ROZ-MOFUMOFU-ME/zny-nomp)
-[![GitHub CI](https://github.com/ROZ-MOFUMOFU-ME/zny-nomp/actions/workflows/node.js.yml/badge.svg)](https://github.com/ROZ-MOFUMOFU-ME/zny-nomp/actions/workflows/node.js.yml)
-[![CircleCI](https://circleci.com/gh/ROZ-MOFUMOFU-ME/zny-nomp/tree/main.svg?style=svg)](https://circleci.com/gh/ROZ-MOFUMOFU-ME/zny-nomp/tree/main)
+# Miners World Coin - Node Open Mining Portal
+[![gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Miners-World-Coin-MWC/mwc-nomp)
+[![GitHub CI](https://github.com/Miners-World-Coin-MWC/mwc-nomp/actions/workflows/node.js.yml/badge.svg)](https://github.com/Miners-World-Coin-MWC/mwc-nomp/actions/workflows/node.js.yml)
+[![CircleCI](https://circleci.com/gh/Miners-World-Coin-MWC/mwc-nomp/tree/main.svg?style=svg)](https://circleci.com/gh/Miners-World-Coin-MWC/mwc-nomp/tree/main)
 
 This is a Yescrypt, YesPoWer, Lyra2REv2, sha256d, Quark, x11 and more algo mining pool based off of Node Open Mining Portal.
   
@@ -14,14 +14,14 @@ Usage of this software requires abilities with sysadmin, database admin, coin da
 
 ### Community
 
-ZNY-NOMP official Discord Server
-* Join [https://discord.gg/zHUdQy2NzU](https://discord.gg/zHUdQy2NzU)
+MWC-NOMP official Discord Server
+* Join [https://discord.gg/5HZGx5bbKK](https://discord.gg/5HZGx5bbKK)
 
-If your pool uses ZNY-NOMP let us know and we will list your website here.
+If your pool uses MWC-NOMP let us know and we will list your website here.
 
-### Some pools using ZNY-NOMP or node-stratum-pool module:
+### Some pools using MWC-NOMP or node-stratum-pool module:
 
-* [mofumofu.me - BitZeny Mining Pool](https://zny.mofumofu.me/)
+<!-- * [mofumofu.me - BitZeny Mining Pool](https://zny.mofumofu.me/) -->
 
 Usage
 =====
@@ -47,7 +47,7 @@ Follow the build/install instructions for your coin daemon. Your coin.conf file 
 daemon=1
 rpcuser=username
 rpcpassword=password
-rpcport=9252
+rpcport=4403
 ```
 For redundancy, its recommended to have at least two daemon instances running in case one drops out-of-sync or offline,
 all instances will be polled for block/transaction updates and be used for submitting blocks. Creating a backup daemon
@@ -70,8 +70,8 @@ sudo apt install nodejs npm -y
 sudo npm install n -g
 sudo n stable
 sudo apt purge nodejs npm -y
-git clone https://github.com/ROZ-MOFUMOFU-ME/zny-nomp
-cd zny-nomp
+git clone https://github.com/Miners-World-Coin-MWC/mwc-nomp
+cd mwc-nomp
 npm install
 ```
 
@@ -235,9 +235,9 @@ Explanation for each field:
         "enabled": false,
         "updateInterval": 600,
         "depth": 0.90,
-        "usePoloniex": true,
-        "useCryptsy": true,
-        "useMintpal": true
+        "usePoloniex": false,
+        "useCryptsy": false,
+        "useMintpal": false
     }
 }
 ````
@@ -248,19 +248,19 @@ Inside the `coins` directory, ensure a json file exists for your coin. If it doe
 Here is an example of the required fields:
 ````javascript
 {
-    "name": "BitZeny",
-    "symbol": "ZNY",
-    "algorithm": "yescryptR8",
+    "name": "MinersWorldCoin",
+    "symbol": "MWC",
+    "algorithm": "yespowerMWC",
 
     // Coinbase value is what is added to a block when it is mined, set this to your pool name so 
     // explorers can see which pool mined a particular block.
-    "coinbase": "Bitzeny",
+    "coinbase": "MinersWorldCoin",
     /* Magic value only required for setting up p2p block notifications. It is found in the daemon
        source code as the pchMessageStart variable.
-       For example, BitZeny mainnet magic: https://github.com/BitzenyCoreDevelopers/bitzeny/blob/z2.0.x/src/chainparams.cpp#L114
-       And for BitZeny testnet magic: https://github.com/BitzenyCoreDevelopers/bitzeny/blob/z2.0.x/src/chainparams.cpp#L206 */
-    "peerMagic": "daa5bef9", //optional
-    "peerMagicTestnet": "59454e59" //optional
+       For example, MinersWorldCoin mainnet magic: https://github.com/Miners-World-Coin-MWC/MinersWorldCoin/blob/z2.0.x/src/chainparams.cpp#L128
+       And for MinersWorldCoin testnet magic: https://github.com/Miners-World-Coin-MWC/MinersWorldCoin/blob/z2.0.x/src/chainparams.cpp#L267 */
+    "peerMagic": "ad5aeb9f", //optional
+    "peerMagicTestnet": "9554e495" //optional
 
     //"txMessages": false, //options - defaults to false
 
@@ -273,7 +273,7 @@ see [these instructions](//github.com/AoD-Technologies/cryptocurrency-stratum-po
 
 
 ##### Pool config
-Take a look at the example json file inside the `pool_configs` directory. Rename it to `bitzeny.json` and change the
+Take a look at the example json file inside the `pool_configs` directory. Rename it to `minersworldcoin.json` and change the
 example fields to fit your setup.
 
 ```
@@ -284,11 +284,11 @@ Whenever a miner submits a share, the pool counts the difficulty and keeps addin
 ie: Miner 1 mines at 0.1 difficulty and finds 10 shares, the pool sees it as 1 share. Miner 2 mines at 0.5 difficulty and finds 5 shares, the pool sees it as 2.5 shares.
 ```
 
-```bitzeny.json
+```minersworldcoin.json
 {
     "enabled": true, // Enables the mining pool; set to false to disable it.
 
-    "coin": "bitzeny.json", // Specifies the coin configuration file.
+    "coin": "minersworldcoin.json", // Specifies the coin configuration file.
 
     "blockIdentifier": "", // A unique string to be embedded in blocks mined by this pool. Used for identification purposes.
     "_comment_blockIdentifier1": "a string embedded in the block to be mined. Used to identify the pool in Insight etc.",
@@ -323,7 +323,7 @@ ie: Miner 1 mines at 0.1 difficulty and finds 10 shares, the pool sees it as 1 s
         "maxBlocksPerPayment": 3, // Maximum number of blocks to include in a single payment.
         "daemon": {
             "host": "127.0.0.1", // Coin daemon RPC server host.
-            "port": 9252, // Coin daemon RPC server port.
+            "port": 4403, // Coin daemon RPC server port.
             "user": "username", // Username for daemon RPC server.
             "password": "password" // Password for daemon RPC server.
         }
@@ -367,7 +367,7 @@ ie: Miner 1 mines at 0.1 difficulty and finds 10 shares, the pool sees it as 1 s
     "daemons": [
         {
             "host": "127.0.0.1", // Host where the coin daemon is running.
-            "port": 9252, // Port on which the coin daemon is listening.
+            "port": 4403, // Port on which the coin daemon is listening.
             "user": "username", // Username for accessing the coin daemon.
             "password": "password" // Password for accessing the coin daemon.
         }
@@ -376,7 +376,7 @@ ie: Miner 1 mines at 0.1 difficulty and finds 10 shares, the pool sees it as 1 s
     "p2p": {
         "enabled": true, // Enables P2P mode.
         "host": "127.0.0.1", // Host for the P2P server.
-        "port": 9253, // Port for the P2P server.
+        "port": 5579, // Port for the P2P server.
         "disableTransactions": true // Disables transaction messages in P2P mode.
     },
 
@@ -399,9 +399,9 @@ ie: Miner 1 mines at 0.1 difficulty and finds 10 shares, the pool sees it as 1 s
 ```
 node [path to cli.js] [coin name in config] [block hash symbol]
 ```
-Example: inside `bitzeny.conf` add the line
+Example: inside `minersworldcoin.conf` add the line
 ```
-blocknotify=node /home/user/zny-nomp/scripts/cli.js blocknotify bitzeny %s
+blocknotify=node /home/user/mwc-nomp/scripts/cli.js blocknotify minersworldcoin %s
 ```
 
 Alternatively, you can use a more efficient block notify script written in pure C. Build and usage instructions
@@ -420,14 +420,14 @@ in case the master process crashes.
 * Use something like [redis-commander](https://github.com/joeferner/redis-commander) to have a nice GUI
 for exploring your redis database.
 * Use something like [logrotator](http://www.thegeekstuff.com/2010/07/logrotate-examples/) to rotate log
-output from ZNY-NOMP.
-* Use [New Relic](http://newrelic.com/) to monitor your ZNY-NOMP instance and server performance.
+output from MWC-NOMP.
+* Use [New Relic](http://newrelic.com/) to monitor your MWC-NOMP instance and server performance.
 
 
-#### Upgrading ZNY-NOMP
-When updating ZNY-NOMP to the latest code its important to not only `git pull` the latest from this repo, but to also update
+#### Upgrading MWC-NOMP
+When updating MWC-NOMP to the latest code its important to not only `git pull` the latest from this repo, but to also update
 the `node-stratum-pool` and `node-multi-hashing` modules, and any config files that may have been changed.
-* Inside your ZNY-NOMP directory (where the init.js script is) do `git pull` to get the latest ZNY-NOMP code.
+* Inside your MWC-NOMP directory (where the init.js script is) do `git pull` to get the latest MWC-NOMP code.
 * Remove the dependenices by deleting the `node_modules` directory with `rm -r node_modules`.
 * Run `npm update` to force updating/reinstalling of the dependencies.
 * Compare your `config.json` and `pool_configs/coin.json` configurations to the latest example ones in this repo or the ones in the setup instructions where each config field is explained. <b>You may need to modify or add any new changes.</b>
@@ -435,7 +435,7 @@ the `node-stratum-pool` and `node-multi-hashing` modules, and any config files t
 Donations
 -------
  Donations for development are greatly appreciated!
-  * ZNY: ZmnBu9jPKvVFL22PcwMHSEuVpTxFeCdvNv
+  <!-- * ZNY: ZmnBu9jPKvVFL22PcwMHSEuVpTxFeCdvNv
   * NUKO: 0xa79bde46faab3c40632604728e9f2165b052581c
   * KOTO :k1FTuimwDJ8oo3x23cEBLxovxw5Cqq2U1HK
   * SUSU: SeXbMBaax7NgnTEFEMxin5ycXy9r9CDBot
@@ -449,7 +449,7 @@ Donations
   * LTC: Lh96WZ7Rw9Wf4GDX2KXpzieneZFV5Xe5ou
   * BCH: pzdsppue8uwc20x35psaqq8sgchkenr49c0qxzazxu
   * ETC: 0xc664a0416c23b1b13a18e86cb5fdd1007be375ae
-  * MONA: MLEqE3vi11j4ZguMjkvMn5rUtze6kXbAzQ
+  * MONA: MLEqE3vi11j4ZguMjkvMn5rUtze6kXbAzQ -->
 
 Credits
 -------
