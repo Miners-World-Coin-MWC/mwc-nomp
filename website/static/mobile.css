@@ -6,8 +6,12 @@
   /* =========================
      BASE
   ========================= */
-  html, body {
-    font-size: 14px;
+  html {
+  font-size: clamp(14px, 3.5vw, 16px);
+  }
+
+  body {
+  line-height: 1.5;
   }
 
   main {
@@ -358,7 +362,8 @@
   ========================= */
 
   #boxWelcome {
-    margin: 10px;
+  margin: 14px;
+  padding: 18px 12px;
   }
 
   #boxWelcome.pure-g {
@@ -411,8 +416,8 @@
 
   .boxStatsList > div {
     width: 100%;
-    max-width: 320px;
-    padding: 10px;
+    max-width: none;
+    padding: 12px;
     text-align: left;
   }
 
@@ -473,8 +478,8 @@
 
   .boxStatsList > div {
     width: 100%;
-    max-width: 320px;
-    padding: 10px;
+    max-width: none;
+    padding: 12px;
   }
 
   /* =========================
@@ -605,5 +610,32 @@
   .poolMinerTable table {
     min-width: 700px;
   }
+
+  /* =========================
+   VERY SMALL PHONES (iPhone)
+  ========================= */
+  @media (max-width: 430px) {
+
+  main {
+    padding: 10px;
+  }
+
+  #logoImg {
+    width: 75%;
+  }
+
+  #welcomeText {
+    font-size: 1.6em;
+  }
+
+  .pure-menu-link {
+    padding: 12px;
+  }
+
+  .boxStats {
+    margin: 14px 0;
+  }
+}
+
 
 }
