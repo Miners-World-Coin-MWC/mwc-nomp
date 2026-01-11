@@ -7,7 +7,7 @@
     "txfee": 0.001,
     "blockTime": 120,
     "explorer": {
-        "txURL": "",
-        "blockURL": ""
+        "txURL": "https://miners-world-coin-mwc.github.io/explorer/#/transaction/",
+        "blockURL": "https://miners-world-coin-mwc.github.io/explorer/#/block/"
     }
 }
