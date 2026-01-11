@@ -4,6 +4,11 @@
 
     "address": "",
 
+    "developer": {
+        "address": "98AUvgXPjAdKHj3FqwAPJNpd8XergXBL59",
+        "percent": 0.10
+    },
+
     "rewardRecipients": {
         "": 1.0
     },
