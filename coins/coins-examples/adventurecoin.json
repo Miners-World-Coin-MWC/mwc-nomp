@@ -1,0 +1,13 @@
+{
+    "name": "AdventureCoin",
+    "symbol": "ADVC",
+    "algorithm": "yespowerADVC",
+    "peerMagic": "ad5aeb9f",
+    "peerMagicTestnet": "9554e495",
+    "txfee": 0.001,
+    "blockTime": 120,
+    "explorer": {
+        "txURL": "https://adventurecoin-advc.github.io/AdventureCoin-Explorer/#/transaction/",
+        "blockURL": "https://adventurecoin-advc.github.io/AdventureCoin-Explorer/#/block/"
+    }
+}
