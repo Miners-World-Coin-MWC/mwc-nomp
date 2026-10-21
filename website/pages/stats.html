@@ -140,7 +140,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                             id="statsHashrate{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</span> (Now)</div>
                     <div><i class="fas fa-gauge-simple-high fa-fw"></i> <span id="statsHashrateAvg{{=pool}}">...</span>
                         (Avg)</div>
-                    <div><i class="fas fa-clock fa-fw"></i>&nbsp;Luck: <span id="statsLuckDays{=pool}}">
+                    <div><i class="fas fa-clock fa-fw"></i>&nbsp;Luck: <span id="statsLuckDays{{=pool}}">
                             {{
                             function getReadableLuckTime(lucktime){
                             var luck = lucktime;
@@ -251,15 +251,11 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                     {{if (block[4] != null) { }}
                     <span style="padding-left: 18px;"><small>{{=readableDate(block[4])}}</small></span>
                     {{ } }}
-                    {{if (it.stats.pools[pool].pending.confirms) { }}
-                    {{if (it.stats.pools[pool].pending.confirms[block[0]]) { }}
-                    <span style="float:right; color: red;"><small>{{=it.stats.pools[pool].pending.confirms[block[0]]}}
-                            of 100</small></span>
+                    {{if (it.stats.pools[pool].pending.confirms && it.stats.pools[pool].pending.confirms[block[0]] != null && it.stats.pools[pool].pending.confirms[block[0]] !== '') { }}
+                    <span style="float:right; color: #b45309;"><small>{{=it.stats.pools[pool].pending.confirms[block[0]]}}
+                            / 100 confs</small></span>
                     {{ } else { }}
-                    <span style="float:right; color: red;"><small>*PENDING*</small></span>
-                    {{ } }}
-                    {{ } else { }}
-                    <span style="float:right; color: red;"><small>*PENDING*</small></span>
+                    <span style="float:right; color: #666;" title="Coinbase not mature yet (~100 confs typical). Not a payout failure—pool pays after the wallet reports generate."><small>maturing</small></span>
                     {{ } }}
                     <div><i class="fas fa-gavel fa-fw"></i> <small>Mined By:</small> <a
                             href="/workers/{{=block[3].split('.')[0]}}">{{=block[3]}}</a></div>
@@ -297,7 +293,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
 </div>
 
 <div id="bottomCharts">
-    <div class=" " chartWrapper" id="bottomCharts{{=pool}}" style="text-align:center;">
+    <div class="chartWrapper" id="bottomCharts{{=pool}}" style="text-align:center;">
         <div class="chartWrapper" style="text-align:center;">
             <div class="chartLabel">Finders of the last {{=blockscomb.length}} blocks</div>
             <div class="hidden" id="tooltip{{=pool}}">

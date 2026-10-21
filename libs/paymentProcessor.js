@@ -100,6 +100,11 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
     var paymentInterval;
     var disablePeymentProcessing = false;
+    // After a soft disable (e.g. sendmany hiccup), allow auto-retry so ADVC/MWC
+    // stop needing manual PP restarts. Hard disable (redis fail after payout —
+    // finalRedisCommands.txt present) stays locked until ops clears it.
+    var paymentDisableCycles = 0;
+    var paymentDisableSoftMax = 12; // 12 * 300s ≈ 1 hour
 
     function validateAddress(callback) {
         var cmd = "validateaddress"
@@ -164,7 +169,18 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 return callback(true);
             }
             try {
-                var d = result.data.split('result":')[1].split(',')[0].split('.')[1];
+                // Prefer JSON parse — 0.21+ wallets may return integer 0 with no decimal.
+                var bal = null;
+                try {
+                    var parsed = JSON.parse(result.data);
+                    bal = parsed && parsed.result;
+                } catch (ignore) { }
+                if (bal === null || bal === undefined) {
+                    var raw = result.data.split('result":')[1].split(',')[0].trim();
+                    bal = parseFloat(raw);
+                }
+                var balStr = Number(bal).toFixed(8);
+                var d = balStr.split('.')[1];
                 magnitude = parseInt('10' + new Array(d.length).join('0'));
                 minPaymentSatoshis = parseInt(processingConfig.minimumPayment * magnitude);
                 coinPrecision = magnitude.toString().length - 1;
@@ -585,6 +601,27 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
     var processPayments = function () {
 
+        if (disablePeymentProcessing) {
+            var hardLockFile = coin + '_finalRedisCommands.txt';
+            var hardLocked = false;
+            try { hardLocked = fs.existsSync(hardLockFile); } catch (e) { hardLocked = false; }
+            paymentDisableCycles++;
+            if (!hardLocked && paymentDisableCycles >= paymentDisableSoftMax) {
+                logger.warning(logSystem, logComponent, coin + ' soft-re-enabling payment processing after '
+                    + paymentDisableCycles + ' disabled cycles (no ' + hardLockFile + ').');
+                disablePeymentProcessing = false;
+                paymentDisableCycles = 0;
+            } else {
+                logger.error(logSystem, logComponent, coin + ' payment processing is DISABLED'
+                    + (hardLocked
+                        ? ' (HARD: Redis failed after a payout — apply ' + hardLockFile + ' then restart PP).'
+                        : ' (soft: will auto-retry after ~1h).')
+                    + ' Idle ' + paymentDisableCycles + '/' + paymentDisableSoftMax + ', next in 300s.');
+                paymentInterval = setTimeout(processPayments, 300000);
+                return;
+            }
+        }
+
         var startPaymentProcess = Date.now();
 
         var timeSpentRPC = 0;
@@ -891,16 +928,43 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             if (error) {
                                 logger.error(logSystem, logComponent, 'Error checking pool balance before processing payments.');
                                 return callback(true);
-                            } else if (tBalance < totalOwed) {
-                                logger.error(logSystem, logComponent, 'Insufficient funds (' + satoshisToCoins(tBalance) + ') to process payments (' + satoshisToCoins(totalOwed) + '); possibly waiting for txs.');
-                                performPayment = false;
-                            } else if (tBalance > totalOwed) {
+                            }
+
+                            var balanceOwed = parseInt(0);
+                            for (var bw in workers) {
+                                balanceOwed = balanceOwed + (workers[bw].balance || 0);
+                            }
+
+                            // If wallet cannot cover every mature block at once, still pay oldest blocks that fit
+                            if (tBalance < totalOwed) {
+                                var affordableBlocks = rounds.filter(function (r) { return r.category === 'generate'; })
+                                    .sort(function (a, b) { return a.height - b.height; });
+                                var blocksOwed = parseInt(0);
+                                for (var gi = 0; gi < affordableBlocks.length; gi++) {
+                                    var blockOwed = coinsToSatoshies(affordableBlocks[gi].reward) - feeSatoshi;
+                                    if (blocksOwed + blockOwed + balanceOwed <= tBalance) {
+                                        blocksOwed = blocksOwed + blockOwed;
+                                    } else {
+                                        affordableBlocks[gi].category = 'immature';
+                                    }
+                                }
+                                totalOwed = blocksOwed + balanceOwed;
+                                if (blocksOwed > 0) {
+                                    logger.warning(logSystem, logComponent, 'Partial payment pass: wallet ' + satoshisToCoins(tBalance)
+                                        + ' — paying ' + affordableBlocks.filter(function (r) { return r.category === 'generate'; }).length
+                                        + ' block(s) this cycle (' + satoshisToCoins(blocksOwed) + ' block rewards).');
+                                } else {
+                                    logger.error(logSystem, logComponent, 'Insufficient funds (' + satoshisToCoins(tBalance)
+                                        + ') to process any pending block payments (' + satoshisToCoins(totalOwed) + ' needed for backlog).');
+                                }
+                            }
+
+                            if (totalOwed > 0 && tBalance >= totalOwed) {
                                 performPayment = true;
-                            }
-                            // just in case...
-                            if (totalOwed <= 0) {
+                            } else {
                                 performPayment = false;
                             }
+
                             // if we can not perform payment
                             if (performPayment === false) {
                                 // convert category generate to immature
@@ -1271,9 +1335,10 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                 //clearInterval(paymentInterval);
                                 clearTimeout(paymentInterval);
                                 disablePeymentProcessing = true;
+                                paymentDisableCycles = 0;
 
                                 logger.error(logSystem, logComponent, 'Error RPC sendmany did not return txid '
-                                    + JSON.stringify(result) + 'Disabling payment processing to prevent possible double-payouts.');
+                                    + JSON.stringify(result) + ' Soft-disabling payment processing; will auto-retry in ~1h.');
 
                                 callback(true);
                                 return;
@@ -1408,10 +1473,11 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         //clearInterval(paymentInterval);
                         clearTimeout(paymentInterval);
                         disablePeymentProcessing = true;
+                        paymentDisableCycles = 0;
 
                         logger.error(logSystem, logComponent,
                             'Payments sent but could not update redis. ' + JSON.stringify(error)
-                            + ' Disabling payment processing to prevent possible double-payouts. The redis commands in '
+                            + ' HARD-disabling payment processing to prevent possible double-payouts. The redis commands in '
                             + coin + '_finalRedisCommands.txt must be ran manually');
 
                         fs.writeFile(coin + '_finalRedisCommands.txt', JSON.stringify(finalRedisCommands), function (err) {
@@ -1423,9 +1489,12 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             }
 
         ], function () {
-            if (!disablePeymentProcessing) {
-                paymentInterval = setTimeout(processPayments, paymentIntervalSecs * 1000);
+            var delay = disablePeymentProcessing ? 300000 : (paymentIntervalSecs * 1000);
+            if (disablePeymentProcessing) {
+                logger.error(logSystem, logComponent, coin + ' payment timer backing off ' + (delay / 1000)
+                    + 's (processor disabled — restart after fixing Redis / manual commands).');
             }
+            paymentInterval = setTimeout(processPayments, delay);
 
             var paymentProcessTime = Date.now() - startPaymentProcess;
             logger.debug(logSystem, logComponent, 'Finished interval - time spent: '

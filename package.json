@@ -57,6 +57,6 @@
         "stratum-pool": "https://github.com/Miners-World-Coin-MWC/node-stratum-pool.git"
     },
     "engines": {
-        "node": ">=16 <17"
+        "node": ">=16 <19"
     }
 }
