@@ -198,6 +198,8 @@
     .bmCopy {
         font-size: 0.72em;
         padding: 4px 9px;
+        white-space: nowrap;
+        margin-left: 10px;
     }
 
     .bmHide {
@@ -267,26 +269,79 @@
     body.bmDark .nv-axis line {
         stroke: #4a4e57 !important;
     }
+
+    /* ---- mobile: keep the page inside the phone ---- */
+    @media (max-width: 768px) {
+
+        #bmToolbar {
+            padding: 8px 10px 0 10px;
+            gap: 6px;
+        }
+
+        .bmLive {
+            font-size: 0.78em;
+            padding: 4px 10px;
+        }
+
+        /* 16px stops iOS auto-zooming the page when the search box is tapped */
+        .bmSearch {
+            font-size: 16px;
+        }
+
+        /* un-float the copy button so headers stack cleanly */
+        .boxLowerHeader>span {
+            float: none !important;
+            display: block;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        .bmCopy {
+            margin-left: 0;
+            display: inline-block;
+        }
+
+        /* the two big offenders: forced-wide elements that stretch the page sideways */
+        .blockEntry {
+            min-width: 0 !important;
+            word-break: break-all;
+        }
+
+        .boxStatsList {
+            min-width: 0 !important;
+        }
+
+        #blocksPie {
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        /* charts: slightly shorter so they fit without squinting */
+        #topCharts>div>div>svg {
+            height: 220px;
+        }
+
+        #topCharts {
+            padding: 10px 8px 0 8px;
+        }
+
+        #bottomCharts {
+            padding: 0px 8px 0px 8px;
+        }
+
+        div.tooltip {
+            width: 100px;
+            font-size: 11px;
+        }
+    }
 </style>
 
 <div id="bmToolbar">
     <span id="bmLiveBadge" class="bmLive"><span class="bmDot"></span><span
             id="bmLiveText">connecting…</span></span>
     <span class="bmSpacer"></span>
-    <button id="bmDarkToggle" class="bmBtn" type="button"><i class="fas fa-moon"></i> Dark mode</button>
+    <small style="color:#888;">Dark/Light toggle lives in the site menu ↑</small>
 </div>
-<script>
-    /* apply saved dark mode immediately, before first paint of the stats content */
-    (function () {
-        try {
-            if (localStorage.getItem('bmDark') === '1') {
-                document.body.classList.add('bmDark');
-                var b = document.getElementById('bmDarkToggle');
-                if (b) b.innerHTML = '<i class="fas fa-sun"></i> Light mode';
-            }
-        } catch (e) { }
-    })();
-</script>
 <!-- =============== end bMine interactive pack: header =============== -->
 
 <div id="topCharts">
@@ -335,6 +390,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                     <div><i class="fas fa-clock fa-fw"></i>&nbsp;Luck: <span id="statsLuckDays{{=pool}}">
                             {{
                             function getReadableLuckTime(lucktime){
+                            if (!isFinite(lucktime)) return '—';
                             var luck = lucktime;
                             var timeUnits = [ ' Days', ' Hours', ' Minutes' ];
                             if (luck < 1) { luck=luck * 24; if (luck < 1) { luck=luck * 60; return luck.toFixed(2) +
@@ -649,18 +705,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
     (function () {
         'use strict';
 
-        /* ---------------- dark mode ---------------- */
-        var darkBtn = document.getElementById('bmDarkToggle');
-
-        function applyDark(on) {
-            document.body.classList.toggle('bmDark', on);
-            if (darkBtn) darkBtn.innerHTML = on ? '<i class="fas fa-sun"></i> Light mode'
-                : '<i class="fas fa-moon"></i> Dark mode';
-            try { localStorage.setItem('bmDark', on ? '1' : '0'); } catch (e) { }
-        }
-        if (darkBtn) darkBtn.addEventListener('click', function () {
-            applyDark(!document.body.classList.contains('bmDark'));
-        });
+        /* dark mode is now handled site-wide by /static/main.js (toggle in the header menu) */
 
         /* ---------------- copy mining setup ---------------- */
         function legacyCopy(txt, done) {
@@ -783,10 +828,24 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
             el.classList.add('bmFlash');
         }
 
+        /* comma-safe number reader: "255,326" → 255326 (never parseFloat straight —
+           it stops at a comma and reads 255, which caused the glitching counters) */
+        function parseNum(s) {
+            if (s === null || s === undefined) return null;
+            var n = parseFloat(String(s).replace(/,/g, ''));
+            return isNaN(n) ? null : n;
+        }
+
         function animateNum(el, to) {
-            var from = parseFloat(el.getAttribute('data-bm-last'));
-            if (isNaN(from) || from === to) {
-                el.textContent = to.toLocaleString();
+            var from = parseNum(el.getAttribute('data-bm-last'));
+            if (from === null) from = parseNum(el.textContent);
+            if (from === null) from = to;
+
+            /* never stack two animations on the same element */
+            if (el._bmRaf) cancelAnimationFrame(el._bmRaf);
+
+            if (from === to) {
+                el.textContent = String(to);
                 el.setAttribute('data-bm-last', to);
                 return;
             }
@@ -794,14 +853,17 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
             function step(t) {
                 if (start === null) start = t;
                 var p = Math.min(1, (t - start) / dur);
-                el.textContent = Math.round(from + (to - from) * p).toLocaleString();
-                if (p < 1) requestAnimationFrame(step);
-                else {
-                    el.textContent = to.toLocaleString();
+                /* plain integers, no thousands separators — matches the server-rendered format */
+                el.textContent = String(Math.round(from + (to - from) * p));
+                if (p < 1) {
+                    el._bmRaf = requestAnimationFrame(step);
+                } else {
+                    el.textContent = String(to);
                     el.setAttribute('data-bm-last', to);
+                    el._bmRaf = null;
                 }
             }
-            requestAnimationFrame(step);
+            el._bmRaf = requestAnimationFrame(step);
         }
 
         function hookLive() {
@@ -812,9 +874,9 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                 if (badgeWrap) badgeWrap.classList.remove('bmLiveBad');
                 NUM_IDS.forEach(function (pfx) {
                     document.querySelectorAll('[id^="' + pfx + '"]').forEach(function (el) {
-                        var v = parseFloat(el.textContent);
-                        if (!isNaN(v)) {
-                            animateNum(el, v);
+                        var v = parseNum(el.textContent);
+                        if (v !== null) {
+                            animateNum(el, Math.round(v));
                             flash(el);
                         }
                     });

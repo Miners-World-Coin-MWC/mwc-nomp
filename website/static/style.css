@@ -189,3 +189,75 @@ option:checked {
         display: block;
     }
 }
+
+/* ================= bMine dark mode (site-wide) =================
+   Toggled by /static/main.js — adds .bmDark to <html> (and mirrors
+   to <body> so page-scoped styles keep working). Theme the content
+   area; the site chrome (header/footer) is already dark. */
+
+html.bmDark main {
+    background-color: #16181d !important;
+}
+
+html.bmDark body {
+    color: #e5e7eb;
+}
+
+/* tables (payments, tbs, workers…) */
+html.bmDark main table,
+html.bmDark main .poolWrapper,
+html.bmDark main .chartWrapper {
+    background-color: #23262c !important;
+}
+
+html.bmDark main table th {
+    background-color: #2f333b !important;
+    color: #e5e7eb !important;
+}
+
+html.bmDark main table td {
+    color: #e5e7eb !important;
+}
+
+html.bmDark main tr.pure-table-odd td {
+    background-color: #262a31 !important;
+}
+
+html.bmDark main .poolWrapper,
+html.bmDark main .boxStats {
+    border-color: #3a3e46 !important;
+    color: #f3f4f6 !important;
+}
+
+/* generic text + links inside content */
+html.bmDark main .poolLabel,
+html.bmDark main .chartLabel,
+html.bmDark main .boxLowerHeader {
+    color: #e5e7eb !important;
+}
+
+html.bmDark main a {
+    color: #7ab7ff !important;
+}
+
+/* inputs & buttons that live in page content */
+html.bmDark main input,
+html.bmDark main button,
+html.bmDark main select {
+    background-color: #23262c !important;
+    color: #e5e7eb !important;
+    border-color: #3a3e46 !important;
+}
+
+/* getting-started / api code blocks and misc cards */
+html.bmDark main .menuHeader,
+html.bmDark main .menuList,
+html.bmDark main #coinInfo {
+    background-color: #23262c !important;
+    color: #e5e7eb !important;
+}
+
+/* nav toggle button (injected by main.js) */
+#bmDarkNavToggle {
+    cursor: pointer;
+}

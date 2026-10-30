@@ -94,6 +94,7 @@ function getReadableHashRateString(hashrate){
  }
 
  function getReadableLuckTime(lucktime){
+    if (!isFinite(lucktime)) return '—';
     var luck = lucktime;
     var timeUnits = [ ' Days', ' Hours', ' Minutes' ];
     if (luck < 1) {
