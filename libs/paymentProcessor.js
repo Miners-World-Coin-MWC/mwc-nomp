@@ -93,6 +93,10 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     if (poolOptions.redis.password) {
         redisClient.auth(poolOptions.redis.password);
     }
+    // a redis hiccup must not crash the whole payment worker
+    redisClient.on('error', function (err) {
+        logger.error(logSystem, logComponent, 'Redis error: ' + JSON.stringify(err));
+    });
 
     var magnitude;
     var minPaymentSatoshis;
@@ -104,7 +108,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     // stop needing manual PP restarts. Hard disable (redis fail after payout —
     // finalRedisCommands.txt present) stays locked until ops clears it.
     var paymentDisableCycles = 0;
-    var paymentDisableSoftMax = 12; // 12 * 300s ≈ 1 hour
+    // Configurable via paymentProcessing.disableRetryCycles (default 2 => ~10 min at 300s/cycle)
+    var paymentDisableSoftMax = (processingConfig.disableRetryCycles > 0 ? processingConfig.disableRetryCycles : 2);
 
     function validateAddress(callback) {
         var cmd = "validateaddress"
@@ -271,8 +276,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     function sendTToZ(callback, tBalance, minConf) {
         if (callback === true)
             return;
-        if (tBalance === NaN) {
-            logger.error(logSystem, logComponent, 'tBalance === NaN for sendTToZ');
+        if (isNaN(tBalance)) {
+            logger.error(logSystem, logComponent, 'tBalance is NaN for sendTToZ');
             return;
         }
         if ((tBalance - txFee) <= 0)
@@ -310,8 +315,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     function sendZToT(callback, zBalance, minConf) {
         if (callback === true)
             return;
-        if (zBalance === NaN) {
-            logger.error(logSystem, logComponent, 'zBalance === NaN for sendZToT');
+        if (isNaN(zBalance)) {
+            logger.error(logSystem, logComponent, 'zBalance is NaN for sendZToT');
             return;
         }
         if ((zBalance - txFee) <= 0)
@@ -634,7 +639,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
         var endRedisTimer = function () { timeSpentRedis += Date.now() - startTimeRedis };
 
         var startRPCTimer = function () { startTimeRPC = Date.now(); };
-        var endRPCTimer = function () { timeSpentRPC += Date.now() - startTimeRedis };
+        var endRPCTimer = function () { timeSpentRPC += Date.now() - startTimeRPC };
 
         async.waterfall([
             /*
@@ -834,6 +839,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             if ((compareR.height === r.height)
                                 && (compareR.category !== 'kicked')
                                 && (compareR.category !== 'orphan')
+                                && (compareR.category !== 'conflicted')
+                                && (compareR.category !== 'conflict')
                                 && (compareR.serialized !== r.serialized)) {
                                 return false;
                             }
@@ -847,6 +854,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         switch (r.category) {
                             case 'orphan':
                             case 'kicked':
+                            case 'conflicted':
+                            case 'conflict':
                                 r.canDeleteShares = canDeleteShares(r);
                             case 'immature':
                                 return true;
@@ -1006,6 +1015,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                 switch (round.category) {
                                     case 'kicked':
                                     case 'orphan':
+                                    case 'conflicted':
+                                    case 'conflict':
                                         round.workerShares = workerShares;
                                         break;
 
@@ -1255,7 +1266,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         // check for failed payments, there are many reasons
                         if (result.error && result.error.code === -6) {
                             // check if it is because we don't have enough funds
-                            if (result.error.message && result.error.message.includes("insufficient funds")) {
+                            // (case-insensitive: daemon replies "Insufficient funds")
+                            if (result.error.message && result.error.message.toLowerCase().indexOf("insufficient funds") !== -1) {
                                 // only try up to XX times (Max, 0.5%)
                                 if (tries < 5) {
                                     // we thought we had enough funds to send payments, but apparently not...
@@ -1285,6 +1297,16 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             callback(true);
                             return;
                         }
+                        else if (result.error && result.error.code === -14) {
+                            // encrypted wallet is locked and cannot sign the payout
+                            logger.warning(logSystem, logComponent, rpccallTracking);
+                            logger.error(logSystem, logComponent, 'Wallet is LOCKED - cannot send payments. '
+                                + 'Unlock it on the daemon with: walletpassphrase "<your passphrase>" 9999999 '
+                                + '(and consider a cron job to keep it unlocked) - ' + JSON.stringify(result.error));
+                            // payment failed, prevent updates to redis
+                            callback(true);
+                            return;
+                        }
                         else if (result.error && result.error.message != null) {
                             // invalid amount, others?
                             logger.warning(logSystem, logComponent, rpccallTracking);
@@ -1306,6 +1328,12 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                             var txid = null;
                             if (result.response) {
                                 txid = result.response;
+                            } else if (result.data) {
+                                // parsed response was empty - try the raw RPC payload before giving up
+                                try {
+                                    var rawParsed = JSON.parse(result.data);
+                                    if (rawParsed && rawParsed.result) txid = rawParsed.result;
+                                } catch (e) { }
                             }
                             if (txid != null) {
 
@@ -1338,7 +1366,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                                 paymentDisableCycles = 0;
 
                                 logger.error(logSystem, logComponent, 'Error RPC sendmany did not return txid '
-                                    + JSON.stringify(result) + ' Soft-disabling payment processing; will auto-retry in ~1h.');
+                                    + JSON.stringify(result) + ' Soft-disabling payment processing; will auto-retry shortly.');
 
                                 callback(true);
                                 return;
@@ -1409,6 +1437,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                     switch (r.category) {
                         case 'kicked':
                         case 'orphan':
+                        case 'conflicted':
+                        case 'conflict':
                             confirmsToDelete.push(['hdel', coin + ':blocksPendingConfirms', r.blockHash]);
                             movePendingCommands.push(['smove', coin + ':blocksPending', coin + ':blocksKicked', r.serialized]);
                             if (r.canDeleteShares) {
@@ -1467,9 +1497,25 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 }
 
                 startRedisTimer();
-                redisClient.multi(finalRedisCommands).exec(function (error, results) {
-                    endRedisTimer();
-                    if (error) {
+                // The coins have already left the wallet at this point. A transient redis error
+                // must be retried before we hard-lock the pool, otherwise every network blip
+                // stalls payouts and requires manual finalRedisCommands surgery.
+                var redisAttempts = 0;
+                var runFinalRedisCommands = function () {
+                    redisAttempts++;
+                    redisClient.multi(finalRedisCommands).exec(function (error, results) {
+                        if (!error) {
+                            endRedisTimer();
+                            callback();
+                            return;
+                        }
+                        logger.error(logSystem, logComponent, 'Post-payout redis update failed (attempt '
+                            + redisAttempts + '/3): ' + JSON.stringify(error));
+                        if (redisAttempts < 3) {
+                            setTimeout(runFinalRedisCommands, 1500 * redisAttempts);
+                            return;
+                        }
+                        endRedisTimer();
                         //clearInterval(paymentInterval);
                         clearTimeout(paymentInterval);
                         disablePeymentProcessing = true;
@@ -1483,9 +1529,10 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         fs.writeFile(coin + '_finalRedisCommands.txt', JSON.stringify(finalRedisCommands), function (err) {
                             logger.error('Could not write finalRedisCommands.txt, you are fucked.');
                         });
-                    }
-                    callback();
-                });
+                        callback();
+                    });
+                };
+                runFinalRedisCommands();
             }
 
         ], function () {
