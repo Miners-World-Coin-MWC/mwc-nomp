@@ -103,6 +103,192 @@
     }
 </style>
 
+<!-- ================= bMine interactive pack ================= -->
+<style>
+    #bmToolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px 0 18px;
+        flex-wrap: wrap;
+    }
+
+    .bmSpacer {
+        flex: 1;
+    }
+
+    .bmBtn {
+        background: #ffffff;
+        color: #333;
+        border: solid 1px #c7c7c7;
+        border-radius: 5px;
+        padding: 6px 12px;
+        font-size: 0.85em;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .bmBtn:hover {
+        background: #f3f4f6;
+    }
+
+    .bmLive {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.85em;
+        color: #166534;
+        background: #dcfce7;
+        border: solid 1px #86efac;
+        border-radius: 999px;
+        padding: 5px 12px;
+    }
+
+    .bmDot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: bmPulse 1.6s ease-out infinite;
+        display: inline-block;
+    }
+
+    .bmLiveBad {
+        color: #92400e;
+        background: #fef3c7;
+        border-color: #fcd34d;
+    }
+
+    .bmLiveBad .bmDot {
+        background: #f59e0b;
+        animation: none;
+    }
+
+    @keyframes bmPulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+        }
+
+        70% {
+            box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        }
+    }
+
+    .bmSearch {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 7px 11px;
+        border: solid 1px #c7c7c7;
+        border-radius: 5px;
+        font-size: 0.9em;
+        font-family: inherit;
+        background: #fff;
+        color: #333;
+    }
+
+    .bmSearch:focus {
+        outline: 2px solid #22c55e;
+        outline-offset: 0;
+    }
+
+    .bmCopy {
+        font-size: 0.72em;
+        padding: 4px 9px;
+    }
+
+    .bmHide {
+        display: none !important;
+    }
+
+    .bmFlash {
+        animation: bmFlashAnim 0.9s ease-out;
+        border-radius: 4px;
+    }
+
+    @keyframes bmFlashAnim {
+        0% {
+            background-color: #bbf7d0;
+        }
+
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    /* ---- dark mode (scoped, overrides carry !important to beat inline styles) ---- */
+    body.bmDark {
+        background: #16181d !important;
+        color: #e5e7eb !important;
+    }
+
+    body.bmDark .bmBtn,
+    body.bmDark .bmSearch {
+        background: #23262c !important;
+        color: #e5e7eb !important;
+        border-color: #3a3e46 !important;
+    }
+
+    body.bmDark .chartWrapper {
+        background: #23262c !important;
+        border-color: #3a3e46 !important;
+    }
+
+    body.bmDark .chartLabel {
+        color: #e5e7eb !important;
+    }
+
+    body.bmDark .boxStats {
+        background: #23262c !important;
+        color: #f3f4f6 !important;
+    }
+
+    body.bmDark .boxStats small {
+        color: #cbd5e1 !important;
+    }
+
+    body.bmDark .blockEntry {
+        background-color: #2a2e35 !important;
+    }
+
+    body.bmDark a {
+        color: #7ab7ff !important;
+    }
+
+    body.bmDark .nv-axis text,
+    body.bmDark .nv-legendText {
+        fill: #cfd3da !important;
+    }
+
+    body.bmDark .nv-axis path,
+    body.bmDark .nv-axis line {
+        stroke: #4a4e57 !important;
+    }
+</style>
+
+<div id="bmToolbar">
+    <span id="bmLiveBadge" class="bmLive"><span class="bmDot"></span><span
+            id="bmLiveText">connecting…</span></span>
+    <span class="bmSpacer"></span>
+    <button id="bmDarkToggle" class="bmBtn" type="button"><i class="fas fa-moon"></i> Dark mode</button>
+</div>
+<script>
+    /* apply saved dark mode immediately, before first paint of the stats content */
+    (function () {
+        try {
+            if (localStorage.getItem('bmDark') === '1') {
+                document.body.classList.add('bmDark');
+                var b = document.getElementById('bmDarkToggle');
+                if (b) b.innerHTML = '<i class="fas fa-sun"></i> Light mode';
+            }
+        } catch (e) { }
+    })();
+</script>
+<!-- =============== end bMine interactive pack: header =============== -->
+
 <div id="topCharts">
     <div class="chartWrapper">
         <div class="chartLabel">Pool Historical Hashrate</div>
@@ -129,7 +315,13 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
     {{ for(var pool in it.stats.pools) { }}
     <div class="pure-u-1-3">
         <div class="boxStats" id="boxStatsLeft">
-            <div class="boxLowerHeader">{{=capitalizeFirstLetter(it.stats.pools[pool].name)}} Pool Stats</div>
+            <div class="boxLowerHeader"><span style="float:right;"><button class="bmCopy bmBtn" type="button"
+                        data-pool="{{=pool}}" data-name="{{=it.stats.pools[pool].name}}"
+                        data-symbol="{{=it.stats.pools[pool].symbol}}"
+                        data-algo="{{=it.stats.pools[pool].algorithm}}"
+                        data-ports='{{=JSON.stringify(it.poolsConfigs[pool].ports || {})}}'><i class="fas fa-copy"></i>
+                        Copy mining setup</button></span>{{=capitalizeFirstLetter(it.stats.pools[pool].name)}} Pool
+                Stats</div>
             <div class="boxStatsList">
                 <div>
                     <div><i class="fas fa-users fa-fw"></i> <span
@@ -221,7 +413,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
 {{ var blockscomb = new Array; }}
 <div class="pure-g" id="boxesLower">
     <div class="pure-u-1-1">
-        <div class="boxStats" id="boxStatsRight">
+        <div class="boxStats" id="boxStatsRight" data-bm-blocks="{{=pool}}">
             <div class="boxLowerHeader">
                 {{=capitalizeFirstLetter(pool)}} Blocks Found &nbsp;&nbsp;
                 <span style="float:right;">
@@ -235,11 +427,16 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                     </small>&nbsp;&nbsp;
                 </span>
             </div>
+            <div style="padding: 0 9px;">
+                <input class="bmSearch" type="text" data-pool="{{=pool}}"
+                    placeholder="Filter blocks by miner, height or hash…">
+            </div>
             <div class="boxStatsList" style="margin-top: 9px;">
                 <!--<div id="{{=it.stats.pools[pool].name}}NewBlocks"></div>-->
                 {{ for(var b in it.stats.pools[pool].pending.blocks) { }}
                 {{ var block = it.stats.pools[pool].pending.blocks[b].split(":"); }}
-                <div style="margin-bottom: 9px; background-color: #eee; min-width:600px;">
+                <div class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}"
+                    style="margin-bottom: 9px; background-color: #eee; min-width:600px;">
                     <i class="fas fa-bars fa-fw"></i>
                     <small>Block:</small>
                     {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.blockURL) { }}
@@ -264,6 +461,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                 {{ } }}
                 {{ var i=0; for(var b in it.stats.pools[pool].confirmed.blocks) { }}
                 {{ if (i < 8) { i++; }} {{ var block=it.stats.pools[pool].confirmed.blocks[b].split(":"); }} <div
+                    class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}"
                     style="margin-bottom: 9px; background-color: #eeeeee; min-width:600px;">
                     <i class="fas fa-bars fa-fw"></i>
                     <small>Block:</small>
@@ -445,3 +643,190 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
         return hashrate.toFixed(2) + byteUnits[i];
     }
 </script>
+
+<!-- =============== bMine interactive pack: behaviour =============== -->
+<script>
+    (function () {
+        'use strict';
+
+        /* ---------------- dark mode ---------------- */
+        var darkBtn = document.getElementById('bmDarkToggle');
+
+        function applyDark(on) {
+            document.body.classList.toggle('bmDark', on);
+            if (darkBtn) darkBtn.innerHTML = on ? '<i class="fas fa-sun"></i> Light mode'
+                : '<i class="fas fa-moon"></i> Dark mode';
+            try { localStorage.setItem('bmDark', on ? '1' : '0'); } catch (e) { }
+        }
+        if (darkBtn) darkBtn.addEventListener('click', function () {
+            applyDark(!document.body.classList.contains('bmDark'));
+        });
+
+        /* ---------------- copy mining setup ---------------- */
+        function legacyCopy(txt, done) {
+            var ta = document.createElement('textarea');
+            ta.value = txt;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) { }
+            document.body.removeChild(ta);
+        }
+
+        function copyText(txt, done) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt).then(done, function () { legacyCopy(txt, done); });
+            } else {
+                legacyCopy(txt, done);
+            }
+        }
+
+        document.addEventListener('click', function (ev) {
+            var btn = ev.target && ev.target.closest ? ev.target.closest('.bmCopy') : null;
+            if (!btn) return;
+            ev.preventDefault();
+
+            var host = window.location.hostname;
+            var ports = [];
+            try { ports = JSON.parse(btn.getAttribute('data-ports') || '[]'); } catch (e) { ports = []; }
+
+            var list = [];
+            if (Array.isArray(ports)) {
+                ports.forEach(function (p) {
+                    if (p && p.port != null) {
+                        var d = (p.difficulty != null) ? p.difficulty : (p.diff != null ? p.diff : '');
+                        list.push({ port: p.port, diff: d });
+                    }
+                });
+            } else {
+                Object.keys(ports).forEach(function (pt) {
+                    var cfg = ports[pt] || {};
+                    var d = (cfg.difficulty != null) ? cfg.difficulty : (cfg.diff != null ? cfg.diff : '');
+                    list.push({ port: pt, diff: d });
+                });
+            }
+
+            var name = btn.getAttribute('data-name') || 'Pool';
+            var sym = btn.getAttribute('data-symbol') || '';
+            var lines = [
+                name + ' (' + sym + ') mining on ' + host,
+                'Algorithm: ' + (btn.getAttribute('data-algo') || '')
+            ];
+            if (list.length) {
+                list.forEach(function (p) {
+                    lines.push('URL: stratum+tcp://' + host + ':' + p.port +
+                        (p.diff !== '' ? '  (starting difficulty ' + p.diff + ')' : ''));
+                });
+            } else {
+                lines.push('URL: stratum+tcp://' + host + '  (ports listed on the Getting Started page)');
+            }
+            lines.push('User: YOUR_' + sym + '_WALLET_ADDRESS.WorkerName');
+            lines.push('Pass: x');
+
+            copyText(lines.join('\n'), function () {
+                var old = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(function () { btn.innerHTML = old; }, 1600);
+            });
+        });
+
+        /* ---------------- block finder filter ---------------- */
+        document.addEventListener('input', function (ev) {
+            var inp = ev.target;
+            if (!inp.classList || !inp.classList.contains('bmSearch')) return;
+
+            var q = inp.value.trim().toLowerCase();
+            var pool = inp.getAttribute('data-pool');
+            var box = document.querySelector('[data-bm-blocks="' + pool + '"]');
+            if (!box) return;
+
+            var entries = box.querySelectorAll('.blockEntry');
+            var shown = 0;
+            entries.forEach(function (el) {
+                var hay = ((el.getAttribute('data-find') || '') + ' ' +
+                    (el.getAttribute('data-height') || '') + ' ' +
+                    (el.getAttribute('data-hash') || '')).toLowerCase();
+                var hit = (q === '' || hay.indexOf(q) !== -1);
+                el.classList.toggle('bmHide', !hit);
+                if (hit) shown++;
+            });
+            inp.setAttribute('placeholder', q === ''
+                ? 'Filter blocks by miner, height or hash…'
+                : 'Showing ' + shown + ' of ' + entries.length + ' blocks');
+        });
+
+        /* ---------------- live badge + animated numbers ---------------- */
+        var badgeText = document.getElementById('bmLiveText');
+        var badgeWrap = document.getElementById('bmLiveBadge');
+        var lastMsg = Date.now();
+
+        function ago(ms) {
+            var s = Math.round(ms / 1000);
+            if (s < 4) return 'just now';
+            if (s < 60) return s + 's ago';
+            return Math.floor(s / 60) + 'm ' + (s % 60) + 's ago';
+        }
+
+        setInterval(function () {
+            var gap = Date.now() - lastMsg;
+            if (badgeText) badgeText.textContent = 'Live · updated ' + ago(gap);
+            if (badgeWrap) badgeWrap.classList.toggle('bmLiveBad', gap > 90000);
+        }, 1000);
+
+        var NUM_IDS = ['statsMiners', 'statsWorkers', 'statsNetworkBlocks',
+            'statsNetworkConnections', 'statsValidBlocks'];
+
+        function flash(el) {
+            el.classList.remove('bmFlash');
+            void el.offsetWidth; /* restart CSS animation */
+            el.classList.add('bmFlash');
+        }
+
+        function animateNum(el, to) {
+            var from = parseFloat(el.getAttribute('data-bm-last'));
+            if (isNaN(from) || from === to) {
+                el.textContent = to.toLocaleString();
+                el.setAttribute('data-bm-last', to);
+                return;
+            }
+            var start = null, dur = 700;
+            function step(t) {
+                if (start === null) start = t;
+                var p = Math.min(1, (t - start) / dur);
+                el.textContent = Math.round(from + (to - from) * p).toLocaleString();
+                if (p < 1) requestAnimationFrame(step);
+                else {
+                    el.textContent = to.toLocaleString();
+                    el.setAttribute('data-bm-last', to);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function hookLive() {
+            if (!window.statsSource || !window.statsSource.addEventListener) return;
+
+            window.statsSource.addEventListener('message', function () {
+                lastMsg = Date.now();
+                if (badgeWrap) badgeWrap.classList.remove('bmLiveBad');
+                NUM_IDS.forEach(function (pfx) {
+                    document.querySelectorAll('[id^="' + pfx + '"]').forEach(function (el) {
+                        var v = parseFloat(el.textContent);
+                        if (!isNaN(v)) {
+                            animateNum(el, v);
+                            flash(el);
+                        }
+                    });
+                });
+            });
+
+            window.statsSource.addEventListener('error', function () {
+                if (badgeText) badgeText.textContent = 'connection lost — retrying…';
+                if (badgeWrap) badgeWrap.classList.add('bmLiveBad');
+            });
+        }
+        hookLive();
+    })();
+</script>
+<!-- =============== end bMine interactive pack =============== -->

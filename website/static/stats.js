@@ -35,7 +35,8 @@ function buildChartData(){
                 for (var f = 0; f < poolKeys.length; f++){
             var pName = poolKeys[f];
             var a = pools[pName] = (pools[pName] || {
-                hashrate: [], pending: []
+                hashrate: [],
+                pending: []
             });
             if (pName in statData[i].pools){
                 a.hashrate.push([time, statData[i].pools[pName].hashrate]);
@@ -119,7 +120,10 @@ function displayCharts(){
             .margin({left: 80, right: 30})
             .x(function(d){ return d[0] })
             .y(function(d){ return d[1] })
-            .useInteractiveGuideline(true);
+            .useInteractiveGuideline(true)
+            .showLegend(true)
+            .forceY([0])
+            .noData('Waiting for data…');
 
         poolHashrateChart.xAxis.tickFormat(timeOfDayFormat);
 
@@ -137,11 +141,14 @@ function displayCharts(){
             .margin({left: 80, right: 30})
             .x(function(d){ return d[0] })
             .y(function(d){ return d[1] })
-            .useInteractiveGuideline(true);
+            .useInteractiveGuideline(true)
+            .showLegend(true)
+            .forceY([0])
+            .noData('Waiting for data…');
         poolPendingChart.xAxis.tickFormat(timeOfDayFormat);
 
         poolPendingChart.yAxis.tickFormat(function(d){
-            return d.toFixed(2);
+            return d.toFixed(0);
         });
 
         d3.select('#poolPending').datum(poolPendingData).call(poolPendingChart);
