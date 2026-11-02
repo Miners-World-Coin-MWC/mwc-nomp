@@ -1,86 +1,5 @@
 <style>
-    #topCharts {
-        padding: 18px 18px 0px 18px;
-    }
-
-    #topCharts>div>div>svg {
-        display: block;
-        height: 280px;
-    }
-
-    .chartWrapper {
-        background: #eee;
-        border: solid 1px #c7c7c7;
-        border-radius: 5px;
-        padding: 5px;
-        margin-bottom: 18px;
-    }
-
-    .chartLabel {
-        font-size: 1.2em;
-        text-align: center;
-        padding: 4px;
-    }
-
-    #boxesLower {
-        margin: 0 9px;
-    }
-
-    #boxesLower>div {
-        display: flex;
-    }
-
-    #boxesLower>div>div {
-        flex: 1 1 auto;
-        margin: 0 9px 18px 9px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .boxLowerHeader {
-        font-size: 1.3em;
-        margin: 0 0 5px 10px;
-    }
-
-    #boxStatsLeft {
-        color: black;
-        background-color: #cccccc;
-    }
-
-    #boxStatsRight {
-        color: black;
-        background-color: #cccccc;
-    }
-
-    .boxStats {
-        color: white;
-    }
-
-    .boxStatsList {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-around;
-        opacity: 0.77;
-        margin-bottom: 5px;
-        flex: 1 1 auto;
-        align-content: center;
-    }
-
-    .boxStatsList i.fa {
-        height: 15px;
-        width: 33px;
-        text-align: center;
-    }
-
-    .boxStatsList>div {
-        padding: 5px 20px;
-    }
-
-    .boxStatsList>div>div {
-        padding: 3px;
-    }
-
+    /* ---- base page ---- */
     div.tooltip {
         position: absolute;
         text-align: center;
@@ -98,12 +17,14 @@
         opacity: 0;
     }
 
-    #bottomCharts {
-        padding: 0px 18px 0px 18px;
+    .chartLabel {
+        font-size: 1.05em;
+        text-align: center;
+        padding: 4px;
     }
 </style>
 
-<!-- ================= bMine interactive pack ================= -->
+<!-- ================= bMine interactive pack + rplant-style coin cards ================= -->
 <style>
     #bmToolbar {
         display: flex;
@@ -199,7 +120,6 @@
         font-size: 0.72em;
         padding: 4px 9px;
         white-space: nowrap;
-        margin-left: 10px;
     }
 
     .bmHide {
@@ -221,7 +141,361 @@
         }
     }
 
-    /* ---- dark mode (scoped, overrides carry !important to beat inline styles) ---- */
+    /* ---- rplant-style per-coin cards ---- */
+    .bmCoinCard {
+        margin: 14px 18px;
+        border-radius: 10px;
+        background: #fff;
+        border: solid 1px #d8dbe0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        --accent: #64748b;
+    }
+
+    .bmCoinCard[data-bm-pool="minersworldcoin"] {
+        --accent: #f59e0b;
+    }
+
+    .bmCoinCard[data-bm-pool="adventurecoin"] {
+        --accent: #14b8a6;
+    }
+
+    .bmCoinCard[data-bm-pool="wojakcoin"] {
+        --accent: #a78bfa;
+    }
+
+    .bmCoinHead {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f1f3f6;
+        border-bottom: solid 1px #d8dbe0;
+        border-left: 4px solid var(--accent);
+        flex-wrap: wrap;
+    }
+
+    .bmCoinBadge {
+        display: inline-flex;
+        min-width: 44px;
+        height: 44px;
+        padding: 0 7px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.8em;
+        letter-spacing: 0.02em;
+    }
+
+    .bmCoinName {
+        font-size: 1.25em;
+        font-weight: 700;
+    }
+
+    .bmAlgoTag {
+        font-size: 0.75em;
+        background: #e2e8f0;
+        color: #334155;
+        padding: 3px 9px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .bmLastBlock {
+        font-size: 0.8em;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .bmCoinStrip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 14px;
+        background: #fafbfc;
+        border-bottom: solid 1px #e5e8ec;
+    }
+
+    .bmKpi {
+        flex: 1 1 100px;
+        min-width: 100px;
+        text-align: center;
+        background: #fff;
+        border: solid 1px #e5e8ec;
+        border-radius: 8px;
+        padding: 8px 6px;
+    }
+
+    .bmKpi small {
+        display: block;
+        color: #64748b;
+        font-size: 0.72em;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+    }
+
+    .bmKpi b {
+        font-size: 1.02em;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .bmCoinBody {
+        display: flex;
+        gap: 14px;
+        padding: 14px;
+        flex-wrap: wrap;
+    }
+
+    .bmChartBox {
+        flex: 2 1 380px;
+        border: solid 1px #e5e8ec;
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+        min-width: 0;
+    }
+
+    .bmChartBox svg {
+        display: block;
+        width: 100%;
+        height: 240px;
+    }
+
+    .bmStatTable {
+        flex: 1 1 300px;
+        border: solid 1px #e5e8ec;
+        border-radius: 8px;
+        padding: 6px 12px;
+        background: #fff;
+        align-self: flex-start;
+        min-width: 0;
+    }
+
+    .bmGroupTitle {
+        font-size: 0.78em;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 10px 0 3px 0;
+    }
+
+    .bmRow {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 2px;
+        border-bottom: 1px dashed #e2e8f0;
+        font-size: 0.92em;
+    }
+
+    .bmRow .l {
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .bmRow .v {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        word-break: break-all;
+    }
+
+    .bmBlocksBox {
+        margin: 0 14px 14px 14px;
+        border: solid 1px #e5e8ec;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .bmBlocksBox .bmBlocksHead {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+    }
+
+    .bmBlocksBox .bmBlocksHead small {
+        color: #64748b;
+    }
+
+    .blockEntry {
+        background: #f1f5f9;
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        min-width: 0;
+    }
+
+    .bmPieBox {
+        margin: 0 14px 14px 14px;
+        border: solid 1px #e5e8ec;
+        border-radius: 8px;
+        padding: 10px;
+        overflow-x: auto;
+    }
+
+    svg[id^="blocksPie"] {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    /* ---- rplant-style dashboard: merged blocks feed + coins table ---- */
+    .bmDashWrap {
+        margin: 14px 18px 0 18px;
+        border: solid 1px #d8dbe0;
+        border-radius: 10px;
+        background: #fff;
+        overflow-x: auto;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .bmDashWrap h3 {
+        margin: 0;
+        padding: 9px 14px;
+        font-size: 1em;
+        background: #f1f3f6;
+        border-bottom: solid 1px #d8dbe0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    table.bmDash {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9em;
+        font-variant-numeric: tabular-nums;
+    }
+
+    table.bmDash th {
+        text-align: left;
+        padding: 5px 8px;
+        font-size: 0.76em;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #475569;
+        border-bottom: solid 1px #e2e8f0;
+        white-space: normal;
+    }
+
+    table.bmDash td {
+        padding: 5px 8px;
+        border-bottom: solid 1px #eef1f4;
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    table.bmDash tbody tr:nth-child(even) {
+        background: #fafbfc;
+    }
+
+    table.bmDash tr.bmRowLink,
+    table.bmDash td.bmRowLink {
+        cursor: pointer;
+    }
+
+    table.bmDash tr.bmRowLink:hover {
+        background: #f1f5f9;
+    }
+
+    .bmMiniBadge {
+        display: inline-flex;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 5px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #64748b;
+        color: #fff;
+        font-size: 0.68em;
+        font-weight: 700;
+        margin-right: 6px;
+        vertical-align: middle;
+    }
+
+    .bmBadge-minersworldcoin {
+        background: #f59e0b;
+    }
+
+    .bmBadge-adventurecoin {
+        background: #14b8a6;
+    }
+
+    .bmBadge-wojakcoin {
+        background: #a78bfa;
+    }
+
+    .bmStPend {
+        color: #b45309;
+        font-weight: 700;
+    }
+
+    .bmStPaid {
+        color: #16a34a;
+        font-weight: 700;
+    }
+
+    .bmStNew {
+        color: #dc2626;
+        font-weight: 700;
+    }
+
+    /* ---- block found toasts ---- */
+    #bmToasts {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 320px;
+    }
+
+    .bmToast {
+        background: #0f172a;
+        color: #f8fafc;
+        border-left: 4px solid #22c55e;
+        border-radius: 8px;
+        padding: 10px 14px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        animation: bmToastIn 0.3s ease-out;
+        font-size: 0.92em;
+    }
+
+    .bmToast b {
+        color: #4ade80;
+    }
+
+    .bmToast small {
+        display: block;
+        color: #94a3b8;
+        margin-top: 2px;
+    }
+
+    @keyframes bmToastIn {
+        from {
+            transform: translateX(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: none;
+            opacity: 1;
+        }
+    }
+
+    /* ---- dark mode ---- */
     body.bmDark {
         background: #16181d !important;
         color: #e5e7eb !important;
@@ -234,22 +508,68 @@
         border-color: #3a3e46 !important;
     }
 
-    body.bmDark .chartWrapper {
-        background: #23262c !important;
-        border-color: #3a3e46 !important;
+    body.bmDark .bmCoinCard {
+        background: #23262c;
+        border-color: #3a3e46;
     }
 
-    body.bmDark .chartLabel {
-        color: #e5e7eb !important;
+    body.bmDark .bmCoinHead {
+        background: #1b1e24;
+        border-bottom-color: #3a3e46;
     }
 
-    body.bmDark .boxStats {
-        background: #23262c !important;
-        color: #f3f4f6 !important;
+    body.bmDark .bmCoinStrip {
+        background: #1e2127;
+        border-bottom-color: #2f333b;
     }
 
-    body.bmDark .boxStats small {
-        color: #cbd5e1 !important;
+    body.bmDark .bmKpi,
+    body.bmDark .bmChartBox,
+    body.bmDark .bmStatTable,
+    body.bmDark .bmBlocksBox,
+    body.bmDark .bmPieBox,
+    body.bmDark .bmDashWrap {
+        background: #23262c;
+        border-color: #3a3e46;
+    }
+
+    body.bmDark .bmDashWrap h3 {
+        background: #1b1e24;
+        border-bottom-color: #3a3e46;
+    }
+
+    body.bmDark table.bmDash th {
+        color: #9aa2af;
+        border-bottom-color: #33373f;
+    }
+
+    body.bmDark table.bmDash td {
+        border-bottom-color: #2c3037;
+    }
+
+    body.bmDark table.bmDash tbody tr:nth-child(even) {
+        background: #1e2127;
+    }
+
+    body.bmDark table.bmDash tr.bmRowLink:hover {
+        background: #262a31;
+    }
+
+    body.bmDark .bmKpi small,
+    body.bmDark .bmRow .l,
+    body.bmDark .bmLastBlock,
+    body.bmDark .bmBlocksBox .bmBlocksHead small,
+    body.bmDark .bmGroupTitle {
+        color: #9aa2af !important;
+    }
+
+    body.bmDark .bmRow {
+        border-bottom-color: #33373f;
+    }
+
+    body.bmDark .bmAlgoTag {
+        background: #2f333b;
+        color: #cbd5e1;
     }
 
     body.bmDark .blockEntry {
@@ -270,7 +590,7 @@
         stroke: #4a4e57 !important;
     }
 
-    /* ---- mobile: keep the page inside the phone ---- */
+    /* ---- mobile ---- */
     @media (max-width: 768px) {
 
         #bmToolbar {
@@ -288,50 +608,66 @@
             font-size: 16px;
         }
 
-        /* un-float the copy button so headers stack cleanly */
-        .boxLowerHeader>span {
-            float: none !important;
-            display: block;
-            text-align: left;
-            margin-top: 5px;
+        .bmCoinCard {
+            margin: 10px;
         }
 
-        .bmCopy {
-            margin-left: 0;
-            display: inline-block;
+        .bmCoinHead {
+            padding: 8px 10px;
         }
 
-        /* the two big offenders: forced-wide elements that stretch the page sideways */
+        .bmCoinBody {
+            padding: 10px;
+        }
+
+        .bmCoinStrip {
+            padding: 8px 10px;
+        }
+
+        .bmKpi {
+            flex: 1 1 44%;
+        }
+
+        .bmChartBox svg {
+            height: 200px;
+        }
+
+        .bmStatTable {
+            flex: 1 1 100%;
+        }
+
+        svg[id^="blocksPie"] {
+            max-width: none;
+        }
+
         .blockEntry {
-            min-width: 0 !important;
             word-break: break-all;
         }
 
-        .boxStatsList {
-            min-width: 0 !important;
+        .bmDashWrap {
+            margin: 10px;
+            border-radius: 8px;
         }
 
-        #blocksPie {
-            width: 100% !important;
-            max-width: 100%;
+        /* small screens: drop the lower-value columns instead of forcing a scroll */
+        @media (max-width: 900px) {
+
+            .bmCoinsTable th:nth-child(2),
+            .bmCoinsTable td:nth-child(2),
+            .bmCoinsTable th:nth-child(5),
+            .bmCoinsTable td:nth-child(5),
+            .bmCoinsTable th:nth-child(10),
+            .bmCoinsTable td:nth-child(10),
+            .bmCoinsTable th:nth-child(11),
+            .bmCoinsTable td:nth-child(11) {
+                display: none;
+            }
         }
 
-        /* charts: slightly shorter so they fit without squinting */
-        #topCharts>div>div>svg {
-            height: 220px;
-        }
-
-        #topCharts {
-            padding: 10px 8px 0 8px;
-        }
-
-        #bottomCharts {
-            padding: 0px 8px 0px 8px;
-        }
-
-        div.tooltip {
-            width: 100px;
-            font-size: 11px;
+        #bmToasts {
+            left: 10px;
+            right: 10px;
+            max-width: none;
         }
     }
 </style>
@@ -340,20 +676,11 @@
     <span id="bmLiveBadge" class="bmLive"><span class="bmDot"></span><span
             id="bmLiveText">connecting…</span></span>
     <span class="bmSpacer"></span>
+    <button id="bmBell" class="bmBtn" type="button" title="Sound on block alerts"><i class="fas fa-bell"></i></button>
     <small style="color:#888;">Dark/Light toggle lives in the site menu ↑</small>
 </div>
 <!-- =============== end bMine interactive pack: header =============== -->
 
-<div id="topCharts">
-    <div class="chartWrapper">
-        <div class="chartLabel">Pool Historical Hashrate</div>
-        <div class="chartHolder"><svg id="poolHashrate"></svg></div>
-    </div>
-    <div class="chartWrapper">
-        <div class="chartLabel">Pool Pending Blocks</div>
-        <div class="chartHolder"><svg id="poolPending"></svg></div>
-    </div>
-</div>
 {{ function capitalizeFirstLetter(t){return t.charAt(0).toUpperCase()+t.slice(1)} }}
 {{ function readableDate(a) {
 var d = new Date(parseInt(a));
@@ -366,305 +693,428 @@ d.getSeconds().toString().padStart(2, '0') + ' ' +
 d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
 '(' + d.toString().match(/\(([^)]+)\)$/)[1] + ')';
 } }}
-<div class="pure-g" id="boxesLower">
-    {{ for(var pool in it.stats.pools) { }}
-    <div class="pure-u-1-3">
-        <div class="boxStats" id="boxStatsLeft">
-            <div class="boxLowerHeader"><span style="float:right;"><button class="bmCopy bmBtn" type="button"
-                        data-pool="{{=pool}}" data-name="{{=it.stats.pools[pool].name}}"
-                        data-symbol="{{=it.stats.pools[pool].symbol}}"
-                        data-algo="{{=it.stats.pools[pool].algorithm}}"
-                        data-ports='{{=JSON.stringify(it.poolsConfigs[pool].ports || {})}}'><i class="fas fa-copy"></i>
-                        Copy mining setup</button></span>{{=capitalizeFirstLetter(it.stats.pools[pool].name)}} Pool
-                Stats</div>
-            <div class="boxStatsList">
-                <div>
-                    <div><i class="fas fa-users fa-fw"></i> <span
-                            id="statsMiners{{=pool}}">{{=it.stats.pools[pool].minerCount}}</span> Miners</div>
-                    <div><i class="fas fa-gears fa-fw"></i> <span
-                            id="statsWorkers{{=pool}}">{{=it.stats.pools[pool].workerCount}}</span> Workers</div>
-                    <div><i class="fas fa-gauge-simple-high fa-fw"></i> <span
-                            id="statsHashrate{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</span> (Now)</div>
-                    <div><i class="fas fa-gauge-simple-high fa-fw"></i> <span id="statsHashrateAvg{{=pool}}">...</span>
-                        (Avg)</div>
-                    <div><i class="fas fa-clock fa-fw"></i>&nbsp;Luck: <span id="statsLuckDays{{=pool}}">
-                            {{
-                            function getReadableLuckTime(lucktime){
-                            if (!isFinite(lucktime)) return '—';
-                            var luck = lucktime;
-                            var timeUnits = [ ' Days', ' Hours', ' Minutes' ];
-                            if (luck < 1) { luck=luck * 24; if (luck < 1) { luck=luck * 60; return luck.toFixed(2) +
-                                timeUnits[2]; } else { return luck.toFixed(2) + timeUnits[1]; } } return luck +
-                                timeUnits[0]; } _luckTime=getReadableLuckTime(it.stats.pools[pool].luckDays); }}
-                                {{=_luckTime}}</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-chart-bar fa-fw"></i> Share: <span id="statsHashPercent{{=pool}}">
-                            {{
-                            var percent=0.0;
-                            if(it.stats.pools[pool].hashrate == 0 ) {
-                            percent=0.0;
-                            } else {
-                            percent=it.stats.pools[pool].hashrate / it.stats.pools[pool].poolStats.networkHash * 100;
-                            }
-                            }}
-                            {{=percent.toFixed(5)}}
-                        </span> %
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="pure-u-1-3">
-        <div class="boxStats" id="boxStatsRight">
-            <div class="boxLowerHeader">{{=capitalizeFirstLetter(it.stats.pools[pool].name)}} Network Stats</div>
-            <div class="boxStatsList">
-                <div>
-                    <div><i class="fas fa-bars fa-fw"></i> <small>Block Height:</small> <span
-                            id="statsNetworkBlocks{{=pool}}">{{=it.stats.pools[pool].poolStats.networkBlocks}}</span>
-                    </div>
-                    <div><i class="fas fa-gauge-simple-high fa-fw"></i> <small>Network H/s:</small> <span
-                            id="statsnetworkHash{{=pool}}">{{=it.stats.pools[pool].poolStats.networkHashString}}</span>
-                    </div>
-                    <div><i class="fas fa-unlock fa-fw"></i> <small>Difficulty:</small> <span
-                            id="statsNetworkDiff{{=pool}}">{{=(parseFloat(it.stats.pools[pool].poolStats.networkDiff)).toFixed(8)}}</span>
-                    </div>
-                    <div><i class="fas fa-signal fa-fw"></i> <small>Node Connections:</small> <span
-                            id="statsNetworkConnections{{=pool}}">{{=it.stats.pools[pool].poolStats.networkConnections}}</span>
-                    </div>
-                    <div><i class="fas fa-code-fork fa-fw"></i> <small>Daemon:</small> <span
-                            id="statsNetworkVersion{{=pool}}">{{=it.stats.pools[pool].poolStats.networkVersion}}</span>
-                    </div>
-                    <div><i class="fas fa-flask fa-fw"></i> <small>Algorithm: </small>
-                        <span>{{=capitalizeFirstLetter(it.stats.pools[pool].algorithm)}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="pure-u-1-3">
-        <div class="boxStats" id="boxStatsLeft">
-            <div class="boxLowerHeader">{{=capitalizeFirstLetter(it.stats.pools[pool].name)}} Block Stats</div>
-            <div class="boxStatsList">
-                <div>
-                    <div><i class="fas fa-cubes fa-fw"></i> Total Blocks
-                        {{=it.stats.pools[pool].poolStats.validBlocks}}</div>
-                    <div><i class="fas fa-hourglass-half fa-fw"></i> Pending
-                        {{=it.stats.pools[pool].blocks.pending}}</div>
-                    <div><i class="fas fa-gavel fa-fw"></i> Confirmed {{=it.stats.pools[pool].blocks.confirmed}}
-                    </div>
-                    <div><i class="fas fa-square-xmark fa-fw"></i> Orphaned
-                        {{=it.stats.pools[pool].blocks.orphaned}}</div>
-                    <div><i class="fas fa-square-check fa-fw"></i> Valid Shares
-                        {{=it.stats.pools[pool].poolStats.validShares}}</div>
-                    <div><i class="fas fa-square-minus fa-fw"></i> Invalid Shares
-                        {{=it.stats.pools[pool].poolStats.invalidShares}}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{ } }}
+{{ function luckStr(t) {
+if (!isFinite(t)) return '—';
+var luck = t;
+var timeUnits = [ ' Days', ' Hours', ' Minutes' ];
+if (luck < 1) { luck = luck * 24; if (luck < 1) { luck = luck * 60; return luck.toFixed(2) + timeUnits[2]; } else { return luck.toFixed(2) + timeUnits[1]; } }
+return luck.toFixed(3) + timeUnits[0];
+} }}
+
+<!-- =============== rplant-style dashboard =============== -->
+{{
+var bmFeed = [];
+for (var bmP in it.stats.pools) {
+    var bmSym = it.stats.pools[bmP].symbol;
+    var bmArr = it.stats.pools[bmP].pending.blocks || [];
+    for (var i = 0; i < bmArr.length; i++) {
+        var bmB = bmArr[i].split(':');
+        bmFeed.push({ pool: bmP, sym: bmSym, ts: parseInt(bmB[4]) || 0, h: bmB[2], finder: bmB[3], st: 'pend' });
+    }
+    bmArr = it.stats.pools[bmP].confirmed.blocks || [];
+    for (var i = 0; i < bmArr.length; i++) {
+        var bmB = bmArr[i].split(':');
+        bmFeed.push({ pool: bmP, sym: bmSym, ts: parseInt(bmB[4]) || 0, h: bmB[2], finder: bmB[3], st: 'paid' });
+    }
+}
+bmFeed.sort(function (a, b) { return b.ts - a.ts; });
+bmFeed = bmFeed.slice(0, 10);
+}}
+
+<div class="bmDashWrap">
+    <h3><i class="fas fa-cubes fa-fw"></i> Latest blocks — all coins</h3>
+    <table class="bmDash bmFeedTable">
+        <thead>
+            <tr>
+                <th>coin</th>
+                <th>height</th>
+                <th>when</th>
+                <th>finder</th>
+                <th>status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ if (bmFeed.length === 0) { }}
+            <tr>
+                <td colspan="5">no blocks yet — everything below updates live</td>
+            </tr>
+            {{ } }}
+            {{ for (var i = 0; i < bmFeed.length; i++) { var f = bmFeed[i]; }}
+            <tr class="bmRowLink" data-bm-goto="{{=f.pool}}">
+                <td class="bmRowLink"><span class="bmMiniBadge bmBadge-{{=f.pool}}">{{=f.sym}}</span>{{=capitalizeFirstLetter(f.pool)}}</td>
+                <td>{{=f.h}}</td>
+                <td class="bmFeedAgo" data-ts="{{=f.ts}}">…</td>
+                <td>{{=f.finder}}</td>
+                <td>{{ if (f.st === 'paid') { }}<span class="bmStPaid">PAID</span>{{ } else { }}<span
+                        class="bmStPend">maturing</span>{{ } }}</td>
+            </tr>
+            {{ } }}
+        </tbody>
+    </table>
 </div>
+
+<div class="bmDashWrap">
+    <h3><i class="fas fa-coins fa-fw"></i> Coins</h3>
+    <table class="bmDash bmCoinsTable">
+        <thead>
+            <tr>
+                <th>coin</th>
+                <th>algo</th>
+                <th>height</th>
+                <th>miners</th>
+                <th>workers</th>
+                <th>luck</th>
+                <th>total blocks</th>
+                <th>pending</th>
+                <th>pool hashrate</th>
+                <th>net hashrate</th>
+                <th>net share</th>
+                <th>est. blocks/day</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ for (var pool in it.stats.pools) { }}
+            {{ var bmHr = it.stats.pools[pool].hashrate; var bmNh = it.stats.pools[pool].poolStats.networkHash; var bmBt = it.stats.pools[pool].blockTime; }}
+            {{ var bmEst = (bmHr > 0 && bmNh > 0 && bmBt > 0) ? (bmHr / bmNh * 86400 / bmBt) : null; }}
+            <tr class="bmRowLink" data-bm-goto="{{=pool}}">
+                <td class="bmRowLink"><span class="bmMiniBadge bmBadge-{{=pool}}">{{=it.stats.pools[pool].symbol}}</span>{{=capitalizeFirstLetter(it.stats.pools[pool].name)}}</td>
+                <td>{{=capitalizeFirstLetter(it.stats.pools[pool].algorithm)}}</td>
+                <td id="tbsHeight{{=pool}}">{{=it.stats.pools[pool].poolStats.networkBlocks}}</td>
+                <td id="tbsMiners{{=pool}}">{{=it.stats.pools[pool].minerCount}}</td>
+                <td id="tbsWorkers{{=pool}}">{{=it.stats.pools[pool].workerCount}}</td>
+                <td id="tbsLuck{{=pool}}">{{=luckStr(it.stats.pools[pool].luckDays)}}</td>
+                <td id="tbsBlocks{{=pool}}">{{=it.stats.pools[pool].poolStats.validBlocks}}</td>
+                <td id="tbsPend{{=pool}}">{{=it.stats.pools[pool].blocks.pending}}</td>
+                <td id="tbsPoolHr{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</td>
+                <td id="tbsNetHr{{=pool}}">{{=it.stats.pools[pool].poolStats.networkHashString}}</td>
+                <td id="tbsShare{{=pool}}">{{=bmNh > 0 ? (bmHr / bmNh * 100).toFixed(2) : '0.00'}}%</td>
+                <td id="tbsEst{{=pool}}" data-bt="{{=bmBt}}">{{=bmEst === null ? '—' : bmEst.toFixed(2)}}</td>
+            </tr>
+            {{ } }}
+        </tbody>
+    </table>
+</div>
+<!-- =============== end rplant-style dashboard =============== -->
+
 {{ for(var pool in it.stats.pools) { }}
 {{ var blockscomb = new Array; }}
-<div class="pure-g" id="boxesLower">
-    <div class="pure-u-1-1">
-        <div class="boxStats" id="boxStatsRight" data-bm-blocks="{{=pool}}">
-            <div class="boxLowerHeader">
-                {{=capitalizeFirstLetter(pool)}} Blocks Found &nbsp;&nbsp;
-                <span style="float:right;">
-                    <small>
-                        <i class="fas fa-bars fa-fw"></i> <span
-                            id="statsValidBlocks{{=pool}}">{{=it.stats.pools[pool].poolStats.validBlocks}}</span> Blocks
-                        &nbsp;&nbsp;
-                        <i class="fas fa-money-bill fa-fw"></i> Paid: <span
-                            id="statsTotalPaid{{=pool}}">{{=(parseFloat(it.stats.pools[pool].poolStats.totalPaid)).toFixed(8)}}</span>
-                        {{=it.stats.pools[pool].symbol}}
-                    </small>&nbsp;&nbsp;
-                </span>
+{{ var lastBlk = 0; }}
+{{
+var _pb = it.stats.pools[pool].pending.blocks;
+var _cb = it.stats.pools[pool].confirmed.blocks;
+[_pb[0], _pb[_pb.length-1], _cb[0], _cb[_cb.length-1]].forEach(function(s){
+    if (s) { var t = parseInt(s.split(':')[4]); if (!isNaN(t) && t > lastBlk) lastBlk = t; }
+});
+}}
+<section class="bmCoinCard" data-bm-pool="{{=pool}}" data-name="{{=it.stats.pools[pool].name}}"
+    data-symbol="{{=it.stats.pools[pool].symbol}}">
+
+    <div class="bmCoinHead">
+        <span class="bmCoinBadge">{{=it.stats.pools[pool].symbol}}</span>
+        <span class="bmCoinName">{{=capitalizeFirstLetter(it.stats.pools[pool].name)}}</span>
+        <span class="bmAlgoTag"><i class="fas fa-microchip fa-fw"></i>
+            {{=capitalizeFirstLetter(it.stats.pools[pool].algorithm)}}</span>
+        <span class="bmLastBlock" data-lastblock="{{=pool}}" data-ts="{{=lastBlk}}"><i class="fas fa-clock fa-fw"></i> …</span>
+        <span class="bmSpacer"></span>
+        <button class="bmCopy bmBtn" type="button" data-pool="{{=pool}}" data-name="{{=it.stats.pools[pool].name}}"
+            data-symbol="{{=it.stats.pools[pool].symbol}}" data-algo="{{=it.stats.pools[pool].algorithm}}"
+            data-ports='{{=JSON.stringify(it.poolsConfigs[pool].ports || {})}}'><i class="fas fa-copy"></i> Copy mining
+            setup</button>
+    </div>
+
+    <div class="bmCoinStrip">
+        <div class="bmKpi"><small>Miners</small><b id="statsMiners{{=pool}}">{{=it.stats.pools[pool].minerCount}}</b>
+        </div>
+        <div class="bmKpi"><small>Workers</small><b id="statsWorkers{{=pool}}">{{=it.stats.pools[pool].workerCount}}</b>
+        </div>
+        <div class="bmKpi"><small>Pool Hash (Now)</small><b
+                id="statsHashrate{{=pool}}">{{=it.stats.pools[pool].hashrateString}}</b></div>
+        <div class="bmKpi"><small>Pool Hash (Avg)</small><b id="statsHashrateAvg{{=pool}}">...</b></div>
+        <div class="bmKpi"><small>Net Hash</small><b
+                id="statsnetworkHash{{=pool}}">{{=it.stats.pools[pool].poolStats.networkHashString}}</b></div>
+        <div class="bmKpi"><small>Luck</small><b id="statsLuckDays{{=pool}}">{{=luckStr(it.stats.pools[pool].luckDays)}}</b>
+        </div>
+        <div class="bmKpi"><small>Pool Share</small><b><span id="statsHashPercent{{=pool}}">
+                    {{
+                    var percent=0.0;
+                    if(it.stats.pools[pool].hashrate == 0 ) {
+                    percent=0.0;
+                    } else {
+                    percent=it.stats.pools[pool].hashrate / it.stats.pools[pool].poolStats.networkHash * 100;
+                    }
+                    }}
+                    {{=percent.toFixed(5)}}
+            </span>%</b></div>
+    </div>
+
+    <div class="bmCoinBody">
+        <div class="bmChartBox">
+            <div class="chartLabel">{{=capitalizeFirstLetter(pool)}} pool hashrate — last 24h</div>
+            <svg id="hashChart-{{=pool}}"></svg>
+        </div>
+
+        <div class="bmStatTable">
+            <div class="bmGroupTitle"><i class="fas fa-users fa-fw"></i> Pool</div>
+            <div class="bmRow"><span class="l">Round shares</span><span
+                    class="v">{{=it.stats.pools[pool].shareCount}}</span></div>
+            <div class="bmRow"><span class="l">Total paid</span><span class="v"><span
+                        id="statsTotalPaid{{=pool}}">{{=(parseFloat(it.stats.pools[pool].poolStats.totalPaid)).toFixed(8)}}</span>
+                    {{=it.stats.pools[pool].symbol}}</span></div>
+            <div class="bmRow"><span class="l">Valid shares</span><span
+                    class="v">{{=it.stats.pools[pool].poolStats.validShares}}</span></div>
+            <div class="bmRow"><span class="l">Invalid shares</span><span
+                    class="v">{{=it.stats.pools[pool].poolStats.invalidShares}}</span></div>
+
+            <div class="bmGroupTitle"><i class="fas fa-cubes fa-fw"></i> Blocks</div>
+            <div class="bmRow"><span class="l">Total found</span><span class="v"><span
+                        id="statsValidBlocks{{=pool}}">{{=it.stats.pools[pool].poolStats.validBlocks}}</span></span></div>
+            <div class="bmRow"><span class="l">Pending</span><span
+                    class="v">{{=it.stats.pools[pool].blocks.pending}}</span></div>
+            <div class="bmRow"><span class="l">Confirmed</span><span
+                    class="v">{{=it.stats.pools[pool].blocks.confirmed}}</span></div>
+            <div class="bmRow"><span class="l">Orphaned</span><span
+                    class="v">{{=it.stats.pools[pool].blocks.orphaned}}</span></div>
+
+            <div class="bmGroupTitle"><i class="fas fa-network-wired fa-fw"></i> Network</div>
+            <div class="bmRow"><span class="l">Block height</span><span class="v"><span
+                        id="statsNetworkBlocks{{=pool}}">{{=it.stats.pools[pool].poolStats.networkBlocks}}</span></span>
             </div>
-            <div style="padding: 0 9px;">
-                <input class="bmSearch" type="text" data-pool="{{=pool}}"
-                    placeholder="Filter blocks by miner, height or hash…">
+            <div class="bmRow"><span class="l">Difficulty</span><span class="v"><span
+                        id="statsNetworkDiff{{=pool}}">{{=(parseFloat(it.stats.pools[pool].poolStats.networkDiff)).toFixed(8)}}</span></span>
             </div>
-            <div class="boxStatsList" style="margin-top: 9px;">
-                <!--<div id="{{=it.stats.pools[pool].name}}NewBlocks"></div>-->
-                {{ for(var b in it.stats.pools[pool].pending.blocks) { }}
-                {{ var block = it.stats.pools[pool].pending.blocks[b].split(":"); }}
-                <div class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}"
-                    style="margin-bottom: 9px; background-color: #eee; min-width:600px;">
-                    <i class="fas fa-bars fa-fw"></i>
-                    <small>Block:</small>
-                    {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.blockURL) { }}
-                    <a href="{{=it.poolsConfigs[pool].coin.explorer.blockURL + block[0]}}"
-                        target="_blank">{{=block[2]}}</a>
-                    {{ } else { }}
-                    {{=block[2]}}
-                    {{ } }}
-                    {{if (block[4] != null) { }}
-                    <span style="padding-left: 18px;"><small>{{=readableDate(block[4])}}</small></span>
-                    {{ } }}
-                    {{if (it.stats.pools[pool].pending.confirms && it.stats.pools[pool].pending.confirms[block[0]] != null && it.stats.pools[pool].pending.confirms[block[0]] !== '') { }}
-                    <span style="float:right; color: #b45309;"><small>{{=it.stats.pools[pool].pending.confirms[block[0]]}}
-                            / 100 confs</small></span>
-                    {{ } else { }}
-                    <span style="float:right; color: #666;" title="Coinbase not mature yet (~100 confs typical). Not a payout failure—pool pays after the wallet reports generate."><small>maturing</small></span>
-                    {{ } }}
-                    <div><i class="fas fa-gavel fa-fw"></i> <small>Mined By:</small> <a
-                            href="/workers/{{=block[3].split('.')[0]}}">{{=block[3]}}</a></div>
-                </div>
-                {{ blockscomb.push(block);}}
+            <div class="bmRow"><span class="l">Node conns</span><span class="v"><span
+                        id="statsNetworkConnections{{=pool}}">{{=it.stats.pools[pool].poolStats.networkConnections}}</span></span>
+            </div>
+            <div class="bmRow"><span class="l">Daemon</span><span class="v"><span
+                        id="statsNetworkVersion{{=pool}}">{{=it.stats.pools[pool].poolStats.networkVersion}}</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bmBlocksBox" data-bm-blocks="{{=pool}}">
+        <div class="bmBlocksHead">
+            <strong><i class="fas fa-hammer fa-fw"></i> Blocks found</strong>
+            <small><i class="fas fa-bars fa-fw"></i> <span
+                    id="statsValidBlocksBox{{=pool}}">{{=it.stats.pools[pool].poolStats.validBlocks}}</span> total</small>
+            <span class="bmSpacer"></span>
+            <small><i class="fas fa-money-bill fa-fw"></i> Paid: <span
+                    id="statsTotalPaidBox{{=pool}}">{{=(parseFloat(it.stats.pools[pool].poolStats.totalPaid)).toFixed(8)}}</span>
+                {{=it.stats.pools[pool].symbol}}</small>
+        </div>
+        <input class="bmSearch" type="text" data-pool="{{=pool}}"
+            placeholder="Filter blocks by miner, height or hash…">
+        <div style="margin-top: 9px;">
+            {{ for(var b in it.stats.pools[pool].pending.blocks) { }}
+            {{ var block = it.stats.pools[pool].pending.blocks[b].split(":"); }}
+            <div class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}">
+                <i class="fas fa-bars fa-fw"></i>
+                <small>Block:</small>
+                {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.blockURL) { }}
+                <a href="{{=it.poolsConfigs[pool].coin.explorer.blockURL + block[0]}}"
+                    target="_blank">{{=block[2]}}</a>
+                {{ } else { }}
+                {{=block[2]}}
                 {{ } }}
-                {{ var i=0; for(var b in it.stats.pools[pool].confirmed.blocks) { }}
-                {{ if (i < 8) { i++; }} {{ var block=it.stats.pools[pool].confirmed.blocks[b].split(":"); }} <div
-                    class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}"
-                    style="margin-bottom: 9px; background-color: #eeeeee; min-width:600px;">
-                    <i class="fas fa-bars fa-fw"></i>
-                    <small>Block:</small>
-                    {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.blockURL) { }}
-                    <a href="{{=it.poolsConfigs[pool].coin.explorer.blockURL + block[0]}}"
-                        target="_blank">{{=block[2]}}</a>
-                    {{ } else { }}
-                    {{=block[2]}}
-                    {{ } }}
-                    {{if (block[4] != null) { }}
-                    <span style="padding-left: 18px;"><small>{{=readableDate(block[4])}}</small></span>
-                    {{ } }}
-                    <span style="float:right; padding-left: 18px; color: green;"><small>*PAID*</small></span>
-                    <div><i class="fas fa-gavel fa-fw"></i> <small>Mined By:</small> <a
-                            href="/workers/{{=block[3].split('.')[0]}}">{{=block[3]}}</a></div>
+                {{if (block[4] != null) { }}
+                <span style="padding-left: 18px;"><small>{{=readableDate(block[4])}}</small></span>
+                {{ } }}
+                {{if (it.stats.pools[pool].pending.confirms && it.stats.pools[pool].pending.confirms[block[0]] != null && it.stats.pools[pool].pending.confirms[block[0]] !== '') { }}
+                <span style="float:right; color: #b45309;"><small>{{=it.stats.pools[pool].pending.confirms[block[0]]}}
+                        / 100 confs</small></span>
+                {{ } else { }}
+                <span style="float:right; color: #666;" title="Coinbase not mature yet (~100 confs typical). Not a payout failure—pool pays after the wallet reports generate."><small>maturing</small></span>
+                {{ } }}
+                <div><i class="fas fa-gavel fa-fw"></i> <small>Mined By:</small> <a
+                        href="/workers/{{=block[3].split('.')[0]}}">{{=block[3]}}</a></div>
+            </div>
+            {{ blockscomb.push(block);}}
+            {{ } }}
+            {{ var i=0; for(var b in it.stats.pools[pool].confirmed.blocks) { }}
+            {{ if (i < 8) { i++; }} {{ var block=it.stats.pools[pool].confirmed.blocks[b].split(":"); }} <div
+                class="blockEntry" data-find="{{=block[3]}}" data-hash="{{=block[0]}}" data-height="{{=block[2]}}">
+                <i class="fas fa-bars fa-fw"></i>
+                <small>Block:</small>
+                {{ if (it.poolsConfigs[pool].coin.explorer && it.poolsConfigs[pool].coin.explorer.blockURL) { }}
+                <a href="{{=it.poolsConfigs[pool].coin.explorer.blockURL + block[0]}}"
+                    target="_blank">{{=block[2]}}</a>
+                {{ } else { }}
+                {{=block[2]}}
+                {{ } }}
+                {{if (block[4] != null) { }}
+                <span style="padding-left: 18px;"><small>{{=readableDate(block[4])}}</small></span>
+                {{ } }}
+                <span style="float:right; padding-left: 18px; color: green;"><small>*PAID*</small></span>
+                <div><i class="fas fa-gavel fa-fw"></i> <small>Mined By:</small> <a
+                        href="/workers/{{=block[3].split('.')[0]}}">{{=block[3]}}</a></div>
             </div>
             {{blockscomb.push(block);}}
             {{ } }}
             {{ } }}
-            <!--{{=JSON.stringify(blockscomb)}}-->
             <script>
                 var blockscomb = JSON.parse('{{=JSON.stringify(blockscomb)}}');
             </script>
         </div>
     </div>
-</div>
-</div>
 
-<div id="bottomCharts">
-    <div class="chartWrapper" id="bottomCharts{{=pool}}" style="text-align:center;">
-        <div class="chartWrapper" style="text-align:center;">
-            <div class="chartLabel">Finders of the last {{=blockscomb.length}} blocks</div>
-            <div class="hidden" id="tooltip{{=pool}}">
-                <p><span id="value{{=pool}}"></span> blocks found by <span id="finderr{{=pool}}"></span></p>
-            </div>
-            <div class="chartHolder" id="pie{{=pool}}"><svg id="blocksPie{{=pool}}"
-                    style="display: block; margin: auto; text-align:center;"></svg></div>
+    <div class="bmPieBox">
+        <div class="chartLabel">Finders of the last {{=blockscomb.length}} blocks</div>
+        <div id="tooltip{{=pool}}" class="bmPieTip"
+            style="position: absolute; opacity: 0; width: 240px; height: auto; z-index: 50;">
+            <p style="margin: 0;"><b><span id="value{{=pool}}"></span> blocks</b> (<span
+                    id="pct{{=pool}}"></span>%)<br><span id="finderr{{=pool}}"
+                    style="word-break: break-all;"></span></p>
         </div>
+        <div class="chartHolder" id="pie{{=pool}}"><svg id="blocksPie{{=pool}}"
+                style="display: block; margin: auto; text-align:center;"></svg></div>
     </div>
-</div>
 
-<script>
+    <script>
 
-    var groupedByFinder = {};
-    var data = [];
+        var groupedByFinder = {};
+        var data = [];
 
-    for (var i = 0; i < blockscomb.length; i++) {
-        finder = blockscomb[i][3]; // if other doesn 't already have a property for the current letter
-        // create it and assign it to a new empty array
-        if (!(finder in groupedByFinder))
-            groupedByFinder[finder] = [];
+        for (var i = 0; i < blockscomb.length; i++) {
+            finder = blockscomb[i][3];
+            if (!(finder in groupedByFinder))
+                groupedByFinder[finder] = [];
 
-        groupedByFinder[finder].push(blockscomb[i]);
-    }
+            groupedByFinder[finder].push(blockscomb[i]);
+        }
 
-    Object.keys(groupedByFinder).forEach(function (i) {
-        var obj = {};
-        obj.label = i
-        obj.value = groupedByFinder[i].length
-        data.push(obj)
-    });
+        Object.keys(groupedByFinder).forEach(function (i) {
+            var obj = {};
+            obj.label = i
+            obj.value = groupedByFinder[i].length
+            data.push(obj)
+        });
 
-    console.log(JSON.stringify(data))
+        var w = 400;
+        var h = 360;
+        var r = h / 2;
+        var legendRectSize = 18;
+        var legendSpacing = 5;
 
-    var w = 400;
-    var h = 400;
-    var r = h / 2;
-    var legendRectSize = 18;
-    var legendSpacing = 5;
+        var totalBlocks = 0;
+        data.forEach(function (d) { totalBlocks += d.value; });
 
-    var color = d3.scale.category20c();
-    var div = d3.select("#pie{{=pool}}").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+        /* legend shows a short tag; the hover tooltip shows the full address */
+        function shortAddr(a) {
+            a = String(a);
+            return a.length > 14 ? a.slice(0, 5) + '…' + a.slice(-6) : a;
+        }
 
-    var vis = d3.select('#blocksPie{{=pool}}')
-        .data([data])
-        .attr("width", 1000)
-        .attr("height", h)
-        .attr("style", "display: block; margin: auto;")
-        .attr("preserveAspectRatio", "xMidYMin")
-        .append("svg:g")
-        .attr("transform", "translate(" + r + "," + r + ")");
-
-
-    var pie = d3.layout.pie().value(function (d) { return d.value; });
-
-    // declare an arc generator function
-    var arc = d3.svg.arc().outerRadius(r);
-
-    // select paths, use arc generator to draw
-    var arcs = vis.selectAll("g.slice{{=pool}}")
-        .data(pie)
-        .enter()
-        .append("svg:g")
-        .attr("class", "slice{{=pool}}")
-        .attr("id", "slice")
-        .on("mouseover", function (d) {
+        function tipPos() {
+            var lx = Math.min(d3.event.pageX + 12, window.innerWidth - 260);
+            var ty = Math.max(10, d3.event.pageY - 10);
             d3.select("#tooltip{{=pool}}")
-                .style("left", d3.event.pageX + "px")
-                .style("top", d3.event.pageY + "px")
-                .style("opacity", 1)
-                .select("#value{{=pool}}")
-                .text(d.data.value);
-            d3.select("#tooltip{{=pool}}")
-                .select("#finderr{{=pool}}")
-                .text(d.data.label);
-        });
+                .style("left", lx + "px")
+                .style("top", ty + "px");
+        }
 
-    arcs.append("svg:path")
-        .attr("fill", function (d, i) {
-            return color(i);
-        })
-        .attr("d", function (d) {
-            return arc(d);
-        });
+        function pieTip(label, value) {
+            tipPos();
+            d3.select("#tooltip{{=pool}}").style("opacity", 1);
+            d3.select("#value{{=pool}}").text(value);
+            d3.select("#pct{{=pool}}").text(totalBlocks > 0 ? (value / totalBlocks * 100).toFixed(1) : '0');
+            d3.select("#finderr{{=pool}}").text(label);
+        }
 
-    var legend = vis.selectAll('.legend')
-        .data(color.domain())
-        .enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('id', '{{=pool}}')
-        .attr('transform', function (d, i) {
-            var height = legendRectSize + legendSpacing;
-            var offset = height * color.domain().length / 2;
-            var horz = 12 * legendRectSize;
-            var vert = i * height;
-            return 'translate(' + horz + ',' + vert + ')';
-        });
+        function pieTipHide() {
+            d3.select("#tooltip{{=pool}}").style("opacity", 0);
+        }
 
-    legend.append('rect')
-        .attr('width', legendRectSize)
-        .attr('height', legendRectSize)
-        .style('fill', color)
-        .style('stroke', color);
+        var color = d3.scale.category20c();
+        var div = d3.select("#pie{{=pool}}").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
-    legend.append('text')
-        .attr('x', legendRectSize + legendSpacing)
-        .attr('y', legendRectSize - legendSpacing)
-        .text(function (d, i) {
-            return data[i].label;
-        });
-</script>
+        var vis = d3.select('#blocksPie{{=pool}}')
+            .data([data])
+            .attr("width", 500)
+            .attr("height", h)
+            .attr("style", "display: block; margin: auto;")
+            .attr("preserveAspectRatio", "xMidYMin")
+            .append("svg:g")
+            .attr("transform", "translate(" + r + "," + r + ")");
+
+
+        var pie = d3.layout.pie().value(function (d) { return d.value; });
+
+        var arc = d3.svg.arc().outerRadius(r);
+
+        var arcs = vis.selectAll("g.slice{{=pool}}")
+            .data(pie)
+            .enter()
+            .append("svg:g")
+            .attr("class", "slice{{=pool}}")
+            .attr("id", "slice")
+            .on("mouseover", function (d) {
+                d3.select(this).select("path")
+                    .style("stroke", "#fff")
+                    .style("stroke-width", 2);
+                pieTip(d.data.label, d.data.value);
+            })
+            .on("mousemove", tipPos)
+            .on("mouseout", function () {
+                d3.select(this).select("path")
+                    .style("stroke", null)
+                    .style("stroke-width", null);
+                pieTipHide();
+            });
+
+        arcs.append("svg:path")
+            .attr("fill", function (d, i) {
+                return color(i);
+            })
+            .attr("d", function (d) {
+                return arc(d);
+            });
+
+        var legendCount = color.domain().length;
+        var legend = vis.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('id', '{{=pool}}')
+            .style('cursor', 'pointer')
+            .attr('transform', function (d, i) {
+                var height = legendRectSize + legendSpacing;
+                var vert = i * height + (h - height * legendCount) / 2;
+                return 'translate(380,' + Math.max(0, vert) + ')';
+            })
+            .on('mouseover', function (d, i) {
+                d3.select(this).select('rect')
+                    .style('stroke', '#333')
+                    .style('stroke-width', 2);
+                pieTip(data[i].label, data[i].value);
+            })
+            .on('mousemove', tipPos)
+            .on('mouseout', function () {
+                d3.select(this).select('rect')
+                    .style('stroke', null)
+                    .style('stroke-width', null);
+                pieTipHide();
+            });
+
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color);
+
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function (d, i) {
+                return shortAddr(data[i].label);
+            });
+    </script>
+</section>
 {{ } }}
+
 <script>
-    document.querySelector('main').appendChild(document.createElement('script')).src = '/static/stats.js';
+    document.querySelector('main').appendChild(document.createElement('script')).src = '/static/stats.js?v=8';
 </script>
 <script>
     window.statsSource = new EventSource("/api/live_stats");
@@ -680,12 +1130,28 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
                 $('#statsHashrateAvg' + pool).text(getReadableHashRateString(calculateAverageHashrate(pool)));
                 $('#statsLuckDays' + pool).text(getReadableLuckTime(stats.pools[pool].luckDays));
                 $('#statsValidBlocks' + pool).text(stats.pools[pool].poolStats.validBlocks);
+                $('#statsValidBlocksBox' + pool).text(stats.pools[pool].poolStats.validBlocks);
                 $('#statsTotalPaid' + pool).text((parseFloat(stats.pools[pool].poolStats.totalPaid)).toFixed(8));
+                $('#statsTotalPaidBox' + pool).text((parseFloat(stats.pools[pool].poolStats.totalPaid)).toFixed(8));
                 $('#statsNetworkBlocks' + pool).text(stats.pools[pool].poolStats.networkBlocks);
                 $('#statsNetworkDiff' + pool).text(stats.pools[pool].poolStats.networkDiff);
                 $('#statsnetworkHash' + pool).text(getReadableHashRateString(stats.pools[pool].poolStats.networkHash));
                 $('#statsNetworkConnections' + pool).text(stats.pools[pool].poolStats.networkConnections);
                 $('#statsHashPercent' + pool).text((stats.pools[pool].hashrate / stats.pools[pool].poolStats.networkHash * 100).toFixed(5));
+                /* rplant-style coins table */
+                $('#tbsHeight' + pool).text(stats.pools[pool].poolStats.networkBlocks);
+                $('#tbsMiners' + pool).text(stats.pools[pool].minerCount);
+                $('#tbsWorkers' + pool).text(stats.pools[pool].workerCount);
+                $('#tbsLuck' + pool).text(getReadableLuckTime(stats.pools[pool].luckDays));
+                $('#tbsBlocks' + pool).text(stats.pools[pool].poolStats.validBlocks);
+                $('#tbsPend' + pool).text(stats.pools[pool].blocks.pending);
+                $('#tbsPoolHr' + pool).text(stats.pools[pool].hashrateString);
+                $('#tbsNetHr' + pool).text(getReadableHashRateString(stats.pools[pool].poolStats.networkHash));
+                $('#tbsShare' + pool).text((stats.pools[pool].hashrate / stats.pools[pool].poolStats.networkHash * 100).toFixed(2) + '%');
+                var bmBt = parseInt($('#tbsEst' + pool).attr('data-bt')) || 0;
+                var bmHr2 = stats.pools[pool].hashrate, bmNh2 = stats.pools[pool].poolStats.networkHash;
+                $('#tbsEst' + pool).text(bmBt > 0 && bmHr2 > 0 && bmNh2 > 0 ? (bmHr2 / bmNh2 * 86400 / bmBt).toFixed(2) : '—');
+                if (window.bmCheckBlock) bmCheckBlock(pool, stats.pools[pool].poolStats.validBlocks);
             }
         });
     });
@@ -705,7 +1171,7 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
     (function () {
         'use strict';
 
-        /* dark mode is now handled site-wide by /static/main.js (toggle in the header menu) */
+        /* dark mode is handled site-wide by /static/main.js (toggle in the header menu) */
 
         /* ---------------- copy mining setup ---------------- */
         function legacyCopy(txt, done) {
@@ -889,6 +1355,203 @@ d.toString().match(/GMT([+-]\d{4})/)[0].replace('GMT', 'UTC') + ' ' +
             });
         }
         hookLive();
+
+        /* ---------------- last block ("x ago") per coin ---------------- */
+        function fmtAgo(ts) {
+            var s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+            if (s < 5) return 'just now';
+            if (s < 60) return s + 's ago';
+            var m = Math.floor(s / 60);
+            if (m < 60) return m + 'm ago';
+            var h = Math.floor(m / 60);
+            if (h < 48) return h + 'h ' + (m % 60) + 'm ago';
+            return Math.floor(h / 24) + 'd ago';
+        }
+
+        function paintLastBlocks() {
+            document.querySelectorAll('[data-lastblock]').forEach(function (el) {
+                var ts = parseInt(el.getAttribute('data-ts'));
+                el.innerHTML = '<i class="fas fa-clock fa-fw"></i> ' +
+                    (ts > 0 ? 'last block ' + fmtAgo(ts) : 'no blocks yet');
+            });
+            document.querySelectorAll('.bmFeedAgo').forEach(function (el) {
+                var ts = parseInt(el.getAttribute('data-ts'));
+                el.textContent = ts > 0 ? fmtAgo(ts) : '—';
+            });
+        }
+        paintLastBlocks();
+        setInterval(paintLastBlocks, 30000);
+
+        /* dashboard rows click-scroll to that coin's card */
+        document.addEventListener('click', function (ev) {
+            var tr = ev.target && ev.target.closest ? ev.target.closest('tr.bmRowLink') : null;
+            if (!tr) return;
+            var pool = tr.getAttribute('data-bm-goto');
+            var card = pool && document.querySelector('.bmCoinCard[data-bm-pool="' + pool + '"]');
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        /* new blocks appear at the top of the feed instantly (rplant style) */
+        function feedPrepend(pool, count) {
+            var wrap = document.querySelector('.bmDashWrap');
+            if (!wrap) return;
+            var tbody = wrap.querySelector('table.bmDash tbody');
+            if (!tbody) return;
+            var card = document.querySelector('.bmCoinCard[data-bm-pool="' + pool + '"]');
+            var sym = card ? (card.getAttribute('data-symbol') || pool) : pool;
+            var name = card ? (card.getAttribute('data-name') || pool) : pool;
+            var tr = document.createElement('tr');
+            tr.className = 'bmRowLink';
+            tr.setAttribute('data-bm-goto', pool);
+            tr.innerHTML =
+                '<td class="bmRowLink"><span class="bmMiniBadge bmBadge-' + pool + '">' + sym + '</span>' + name + '</td>' +
+                '<td>#' + count + '</td>' +
+                '<td class="bmFeedAgo" data-ts="' + Date.now() + '">just now</td>' +
+                '<td>—</td>' +
+                '<td><span class="bmStNew">NEW</span></td>';
+            var emptyRow = tbody.querySelector('td[colspan]');
+            if (emptyRow) emptyRow.parentNode.parentNode.removeChild(emptyRow.parentNode);
+            tbody.insertBefore(tr, tbody.firstChild);
+            while (tbody.children.length > 10) tbody.removeChild(tbody.lastChild);
+        }
+
+        /* ---------------- block found notifications ---------------- */
+        var blockSeen = {};
+        var toastQueue = [];
+        var soundOn = true;
+        try { soundOn = localStorage.getItem('bmBlockSound') !== 'off'; } catch (e) { }
+
+        var bellBtn = document.getElementById('bmBell');
+        if (bellBtn) {
+            var paintBell = function () {
+                bellBtn.innerHTML = soundOn
+                    ? '<i class="fas fa-bell"></i>'
+                    : '<i class="fas fa-bell-slash"></i>';
+                bellBtn.title = soundOn ? 'Sound on block alerts' : 'Sound muted (click to enable)';
+            };
+            paintBell();
+            bellBtn.addEventListener('click', function () {
+                soundOn = !soundOn;
+                try { localStorage.setItem('bmBlockSound', soundOn ? 'on' : 'off'); } catch (e) { }
+                paintBell();
+            });
+
+            /* double-click the bell = see what a real block alert looks like */
+            bellBtn.addEventListener('dblclick', function () {
+                var host = ensureToastHost();
+                var t = document.createElement('div');
+                t.className = 'bmToast';
+                t.innerHTML = '🔔 <b>Test alert</b> — block found alerts look like this' +
+                    '<small>real ones fire for any coin the moment a block lands</small>';
+                t.addEventListener('click', function () {
+                    if (t.parentNode) t.parentNode.removeChild(t);
+                });
+                host.appendChild(t);
+                while (host.children.length > 4) host.removeChild(host.firstChild);
+                chime();
+                setTimeout(function () {
+                    if (t.parentNode) t.parentNode.removeChild(t);
+                }, 12000);
+            });
+        }
+
+        /* seed from server-rendered numbers so we never toast on first paint */
+        document.querySelectorAll('.bmCoinCard').forEach(function (card) {
+            var p = card.getAttribute('data-bm-pool');
+            var el = document.getElementById('statsValidBlocks' + p);
+            var v = el ? parseNum(el.textContent) : null;
+            if (v !== null) blockSeen[p] = v;
+        });
+
+        window.bmCheckBlock = function (pool, validBlocks) {
+            var n = parseNum(validBlocks);
+            if (n === null) return;
+            if (blockSeen[pool] === undefined) { blockSeen[pool] = n; return; }
+            if (n > blockSeen[pool]) {
+                var prev = blockSeen[pool];
+                blockSeen[pool] = n;
+                var card = document.querySelector('.bmCoinCard[data-bm-pool="' + pool + '"]');
+                var name = card ? (card.getAttribute('data-name') || pool) : pool;
+                var sym = card ? (card.getAttribute('data-symbol') || '') : '';
+                var lb = document.querySelector('[data-lastblock="' + pool + '"]');
+                if (lb) lb.setAttribute('data-ts', String(Date.now()));
+                for (var k = prev + 1; k <= n; k++) {
+                    queueToast({ name: name, sym: sym, count: k });
+                    feedPrepend(pool, k);
+                }
+            } else {
+                blockSeen[pool] = n;
+            }
+        };
+
+        function queueToast(item) {
+            if (document.hidden) {
+                toastQueue.push(item);
+                if (toastQueue.length > 5) toastQueue.shift();
+                return;
+            }
+            showToast(item);
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden && toastQueue.length) {
+                var q = toastQueue.splice(0);
+                q.forEach(showToast);
+            }
+        });
+
+        function ensureToastHost() {
+            var host = document.getElementById('bmToasts');
+            if (!host) {
+                host = document.createElement('div');
+                host.id = 'bmToasts';
+                document.body.appendChild(host);
+            }
+            return host;
+        }
+
+        function chime() {
+            if (!soundOn) return;
+            try {
+                var AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                bmChimeCtx = bmChimeCtx || new AC();
+                if (bmChimeCtx.state === 'suspended') bmChimeCtx.resume();
+                var t = bmChimeCtx.currentTime;
+                [659, 880].forEach(function (f, i) {
+                    var o = bmChimeCtx.createOscillator();
+                    var g = bmChimeCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = f;
+                    g.gain.setValueAtTime(0.0001, t + i * 0.18);
+                    g.gain.exponentialRampToValueAtTime(0.16, t + i * 0.18 + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.18 + 0.5);
+                    o.connect(g);
+                    g.connect(bmChimeCtx.destination);
+                    o.start(t + i * 0.18);
+                    o.stop(t + i * 0.18 + 0.55);
+                });
+            } catch (e) { /* audio blocked until first tap — fine, toast still shows */ }
+        }
+        var bmChimeCtx = null;
+
+        function showToast(item) {
+            var host = ensureToastHost();
+            var t = document.createElement('div');
+            t.className = 'bmToast';
+            t.innerHTML = '⛏️ <b>Block #' + item.count + '</b> found — ' + item.name +
+                (item.sym ? ' (' + item.sym + ')' : '') +
+                '<small>payout follows after ~100 confirmations</small>';
+            t.addEventListener('click', function () { kill(); });
+            host.appendChild(t);
+            while (host.children.length > 4) host.removeChild(host.firstChild);
+            chime();
+            var timer = setTimeout(kill, 12000);
+            function kill() {
+                clearTimeout(timer);
+                if (t.parentNode) t.parentNode.removeChild(t);
+            }
+        }
     })();
 </script>
 <!-- =============== end bMine interactive pack =============== -->
