@@ -103,6 +103,41 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     var coinPrecision;
 
     var paymentInterval;
+    var paymentWatchdog = null;
+
+    /* ---- payment cycle watchdog -----------------------------------------
+       Payments run as a self-rescheduling chain: each cycle schedules the
+       next one only when it finishes. If a daemon/redis call inside a cycle
+       hangs forever (those sockets have no timeout), the run never returns,
+       never schedules the next one, and NEVER LOGS AN ERROR — payouts just
+       silently freeze until a manual restart (seen 2026-11-02: adventurecoin
+       frozen ~15h, zero errors in log, restart cured it instantly).
+       This watchdog arms when a cycle STARTS and is cleared when the next
+       cycle gets scheduled (i.e. the previous one finished). If a cycle is
+       still "running" after the patience window, we log loudly and exit(1)
+       so pm2 restarts the pool within seconds — same recovery as the manual
+       restart that already proved safe, just automatic and ~15h earlier.
+       No double-pay risk: exit kills the hung cycle; the ledger in redis
+       and the balance re-verification handle crash recovery by design. */
+    function armPaymentWatchdog() {
+        if (paymentWatchdog) clearTimeout(paymentWatchdog);
+        var patienceMs = (paymentIntervalSecs + 600) * 1000;
+        paymentWatchdog = setTimeout(function () {
+            logger.error(logSystem, logComponent,
+                'PAYMENT CYCLE STUCK — a daemon/redis call never returned for over '
+                + Math.round(patienceMs / 60000) + ' minutes, so the payment chain '
+                + 'stopped silently. Exiting for a clean pm2 restart (ledger is safe; '
+                + 'no double-pay risk). If this fires repeatedly, check the '
+                + coin + ' daemon (it is accepting connections but not answering).');
+            process.exit(1);
+        }, patienceMs);
+    }
+
+    function scheduleNextPayments(delayMs) {
+        if (paymentWatchdog) { clearTimeout(paymentWatchdog); paymentWatchdog = null; }
+        if (paymentInterval) clearTimeout(paymentInterval);
+        paymentInterval = setTimeout(processPayments, delayMs);
+    }
     var disablePeymentProcessing = false;
     // After a soft disable (e.g. sendmany hiccup), allow auto-retry so ADVC/MWC
     // stop needing manual PP restarts. Hard disable (redis fail after payout —
@@ -203,11 +238,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
             setupFinished(false);
             return;
         }
-        if (paymentInterval) {
-            //clearInterval(paymentInterval);
-            clearTimeout(paymentInterval);
-        }
-        paymentInterval = setTimeout(processPayments, paymentIntervalSecs * 1000);
+        scheduleNextPayments(paymentIntervalSecs * 1000);
         //paymentInterval = setInterval(processPayments, paymentIntervalSecs * 1000);
         //setTimeout(processPayments, 100);
         setupFinished(true);
@@ -485,6 +516,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
     if (requireShielding === true) {
         var checkOpids = function () {
             clearTimeout(opidTimeout);
+            armPaymentWatchdog(); /* proof of life: each poll pushes the stuck-cycle timer back */
             var checkOpIdSuccessAndGetResult = function (ops) {
                 var batchRPC = [];
                 // if there are no op-ids
@@ -606,6 +638,8 @@ function SetupForPool(logger, poolOptions, setupFinished) {
 
     var processPayments = function () {
 
+        armPaymentWatchdog();
+
         if (disablePeymentProcessing) {
             var hardLockFile = coin + '_finalRedisCommands.txt';
             var hardLocked = false;
@@ -622,7 +656,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                         ? ' (HARD: Redis failed after a payout — apply ' + hardLockFile + ' then restart PP).'
                         : ' (soft: will auto-retry after ~1h).')
                     + ' Idle ' + paymentDisableCycles + '/' + paymentDisableSoftMax + ', next in 300s.');
-                paymentInterval = setTimeout(processPayments, 300000);
+                scheduleNextPayments(300000);
                 return;
             }
         }
@@ -1541,7 +1575,7 @@ function SetupForPool(logger, poolOptions, setupFinished) {
                 logger.error(logSystem, logComponent, coin + ' payment timer backing off ' + (delay / 1000)
                     + 's (processor disabled — restart after fixing Redis / manual commands).');
             }
-            paymentInterval = setTimeout(processPayments, delay);
+            scheduleNextPayments(delay);
 
             var paymentProcessTime = Date.now() - startPaymentProcess;
             logger.debug(logSystem, logComponent, 'Finished interval - time spent: '
